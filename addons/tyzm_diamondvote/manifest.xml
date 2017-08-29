@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://www.we7.cc" versionCode="0.6,0.7">
+	<application setting="true">
+		<name><![CDATA[钻石投票]]></name>
+		<identifie><![CDATA[tyzm_diamondvote]]></identifie>
+		<version><![CDATA[5.29]]></version>
+		<type><![CDATA[activity]]></type>
+		<ability><![CDATA[投票加钻石摸索，涨粉同时赚钱]]></ability>
+		<description><![CDATA[投票加钻石摸索，涨粉同时赚钱]]></description>
+		<author><![CDATA[WeiShiHui Team]]></author>
+		<url><![CDATA[http://www.wshwx.com]]></url>
+	</application>
+	<platform>
+		<subscribes>
+		</subscribes>
+		<handles>
+			<message type="image" />
+			<message type="voice" />
+			<message type="video" />
+			<message type="shortvideo" />
+			<message type="location" />
+			<message type="link" />
+			<message type="subscribe" />
+			<message type="qr" />
+			<message type="trace" />
+			<message type="click" />
+			<message type="merchant_order" />
+			<message type="text" />
+		</handles>
+		<rule embed="true" />
+		<card embed="false" />
+	</platform>
+	<bindings>
+		<menu>
+			<entry title="活动管理" do="manage" state="" direct="false" />
+			<entry title="黑名单" do="blacklist" state="" direct="false" />
+			<entry title="系统升级" do="auth" state="" direct="false" />	
+		</menu>
+	</bindings>
+	<permissions>
+	</permissions>
+	<install><![CDATA[install.php]]></install>
+	<uninstall><![CDATA[uninstall.php]]></uninstall>
+	<upgrade><![CDATA[upgrade.php]]></upgrade>
+</manifest>

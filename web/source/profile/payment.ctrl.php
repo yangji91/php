@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -23,6 +23,7 @@ if ($do == 'get_setting') {
 			'credit' => array('switch' => false),
 			'alipay' => array('switch' => false),
 			'wechat' => array('switch' => false),
+			'wechat_facilitator' => array('switch' => false, 'mchid' => '', 'signkey' => ''),
 			'unionpay' => array('switch' => false),
 			'baifubao' => array('switch' => false),
 			'line' => array('switch' => false),
@@ -61,7 +62,7 @@ if ($do == 'save_setting') {
 	if ($type == 'credit' || $type == 'delivery') {
 		$param['switch'] = $param['switch'] == 'false' ? true : false;
 	}
-	if ($type == 'alipay' || $type == 'baifubao' || $type == 'line') {
+	if ($type == 'alipay' || $type == 'wechat_facilitator' || $type == 'baifubao' || $type == 'line') {
 		$param['switch'] = $param['switch'] == 'true' ? true : false;
 	}
 	if ($type == 'wechat') {
@@ -118,7 +119,15 @@ MFF/yA==
 	}
 	$pay_setting[$type] = $param;
 	$payment = iserializer($pay_setting);
-	uni_setting_save('payment', $payment);
+	if ($setting) {
+		pdo_update('uni_settings', array('payment' => $payment), array('uniacid' => $_W['uniacid']));
+	} else {
+		pdo_insert('uni_settings', array('payment' => $payment, 'uniacid' => $_W['uniacid']));
+	}
+	cache_delete("unisetting:{$_W['uniacid']}");
+	if (($type == 'wechat_facilitator' && $setting['payment']['wechat_facilitator']['switch'] !== $param['switch']) || ($type == 'wechat' && intval($param['switch']) != intval($setting['payment']['wechat']['switch']))) {
+		cache_delete(cache_system_key('proxy_wechatpay_account:'));
+	}
 	if ($type == 'unionpay') {
 		header('LOCATION: '.url('profile/payment'));
 		exit();
@@ -142,6 +151,9 @@ if ($do == 'display') {
 	if (empty($pay_setting['wechat'])) {
 		$pay_setting['wechat'] = array('switch' => false);
 	}
+	if (empty($pay_setting['wechat_facilitator'])) {
+		$pay_setting['wechat_facilitator'] = array('switch' => false, 'mchid' => '', 'signkey' => '');
+	}
 	if (empty($pay_setting['unionpay'])) {
 		$pay_setting['unionpay'] = array('switch' => false);
 	}
@@ -151,6 +163,7 @@ if ($do == 'display') {
 	if (empty($pay_setting['line'])) {
 		$pay_setting['line'] = array('switch' => false);
 	}
+	//废弃微信借用支付
 		if (empty($_W['isfounder'])) {
 		$user_account_list = pdo_getall('uni_account_users', array('uid' => $_W['uid']), array(), 'uniacid');
 		$param['uniacid'] = array_keys($user_account_list);

@@ -1,11 +1,12 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
  
+
 function template($filename, $flag = TEMPLATE_DISPLAY) {
 	global $_W;
 	$source = IA_ROOT . "/web/themes/{$_W['template']}/{$filename}.html";
@@ -16,8 +17,7 @@ function template($filename, $flag = TEMPLATE_DISPLAY) {
 	}
 
 	if(!is_file($source)) {
-		echo "template source '{$filename}' is not exist!";
-		return '';
+		exit("Error: template source '{$filename}' is not exist!");
 	}
 	if(DEVELOPMENT || !is_file($compile) || filemtime($source) > filemtime($compile)) {
 		template_compile($source, $compile);

@@ -1,7 +1,7 @@
 <?php 
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 $dos = array('receive', '');
@@ -12,7 +12,6 @@ $_W['uniacid'] = intval($_GPC['i']);
 if (empty($_W['uniacid'])) {
 	iajax(1, '请先指定公众号');
 }
-$_W['account'] = uni_fetch($_W['uniacid']);
 
 if ($do == 'receive') {
 	ignore_user_abort(true);

@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 define('IN_SYS', true);
 require '../framework/bootstrap.inc.php';
@@ -32,11 +32,7 @@ $_W['acl'] = $acl = array(
 		'founder' => array(
 			'news',
 			'notice' 
-		),
-		'vice-founder' => array(
-			'notice-show',
-			'news-show'
-		),
+		) 
 	),
 	'cloud' => array(
 		'default' => 'touch',
@@ -51,8 +47,7 @@ $_W['acl'] = $acl = array(
 			'upgrade',
 			'process',
 			'device' 
-		),
-		'vice-founder' => array(),
+		) 
 	),
 	'home' => array(
 		'default' => 'welcome',
@@ -96,14 +91,6 @@ $_W['acl'] = $acl = array(
 			'modules' 
 		) 
 	),
-	'module' => array(
-		'direct' => array(),
-		'founder' => array(),
-		'manager' => array(
-			'group'
-		),
-		'operator' => array()
-	),
 	'system' => array(
 		'direct' => array(),
 		'founder' => array(
@@ -123,15 +110,11 @@ $_W['acl'] = $acl = array(
 		),
 		'manager' => array(
 			'account',
+			'module-group',
 			'platform',
 			'updatecache',
 			'module' 
-		),
-		'vice-founder' => array(
-			'platform',
-			'template',
-			'updatecache'
-		),
+		) 
 	),
 	'cron' => array(
 		'direct' => array(
@@ -205,9 +188,6 @@ if (is_array($acl[$controller]['founder']) && in_array($action, $acl[$controller
 		if (! $_W['isfounder']) {
 		message('不能访问, 需要创始人权限才能访问.');
 	}
-}
-if (user_is_vice_founder($_W['uid']) && is_array($acl[$controller]['vice-founder']) && !in_array($action, $acl[$controller]['vice-founder'])) {
-	message('不能访问, 需要相应的权限才能访问.');
 }
 checklogin();
 require _forward($controller, $action);

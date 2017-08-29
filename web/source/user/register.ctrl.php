@@ -1,7 +1,7 @@
 <?php 
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -16,7 +16,6 @@ $extendfields = pdo_getall('profile_fields', array('available' => 1, 'showinregi
 if(checksubmit()) {
 	$member = array();
 	$member['username'] = trim($_GPC['username']);
-	$owner_uid = intval($_GPC['owner_uid']);
 	if(!preg_match(REGULAR_USERNAME, $member['username'])) {
 		itoast('必须输入用户名，格式为 3-15 位字符，可以包括汉字、字母（不区分大小写）、数字、下划线和句点。', '', '');
 	}
@@ -64,16 +63,13 @@ if(checksubmit()) {
 		$member['groupid'] = pdo_fetchcolumn('SELECT id FROM '.tablename('users_group').' ORDER BY id ASC LIMIT 1');
 		$member['groupid'] = intval($member['groupid']);
 	}
-	$group = user_group_detail_info($member['groupid']);
-	
+	$group = pdo_fetch('SELECT * FROM '.tablename('users_group').' WHERE id = :id', array(':id' => $member['groupid']));
 	$timelimit = intval($group['timelimit']);
 	if($timelimit > 0) {
 		$member['endtime'] = strtotime($timelimit . ' days');
 	}
 	$member['starttime'] = TIMESTAMP;
-	if (!empty($owner_uid)) {
-		$member['owner_uid'] = pdo_getcolumn('users', array('uid' => $owner_uid, 'founder_groupid' => ACCOUNT_MANAGE_GROUP_VICE_FOUNDER), 'uid');
-	}
+	
 	$uid = user_register($member);
 	if($uid > 0) {
 		unset($member['password']);

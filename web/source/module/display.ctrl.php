@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -40,9 +40,6 @@ if ($do == 'switch') {
 			$uniacid = $last_module_info['uniacid'];
 			$version_id = $last_module_info['version_id'];
 		}
-	}
-	if (empty($uniacid) && empty($version_id)) {
-		itoast('该模块暂无可用的公众号或小程序，请先分配权限', url('module/display'), 'info');
 	}
 
 	module_save_switch($module_name, $uniacid, $version_id);

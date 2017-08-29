@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -24,10 +24,6 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
 		}
 	}
 	$urlset = ihttp_parse_url($url, true);
-	if (!empty($urlset['ip'])) {
-		$urlset['host'] = $urlset['ip'];
-	}
-	
 	$body = ihttp_build_httpbody($url, $post, $extra);
 	
 	if ($urlset['scheme'] == 'https') {
@@ -35,14 +31,14 @@ function ihttp_request($url, $post = '', $extra = array(), $timeout = 60) {
 	} else {
 		$fp = ihttp_socketopen($urlset['host'], $urlset['port'], $errno, $error);
 	}
-	stream_set_blocking($fp, $timeout > 0 ? true : false);
-	stream_set_timeout($fp, ini_get('default_socket_timeout'));
+	stream_set_blocking($fp, true);
+	stream_set_timeout($fp, $timeout);
 	if (!$fp) {
 		return error(1, $error);
 	} else {
 		fwrite($fp, $body);
-		$content = '';
 		if($timeout > 0) {
+			$content = '';
 			while (!feof($fp)) {
 				$content .= fgets($fp, 512);
 			}
@@ -230,7 +226,7 @@ function ihttp_parse_url($url, $set_default_port = false) {
 		$current_url = parse_url($GLOBALS['_W']['siteroot']);
 		$urlset['host'] = $current_url['host'];
 		$urlset['scheme'] = $current_url['scheme'];
-		$urlset['path'] = $current_url['path'] . 'web/' . str_replace('./', '', $urlset['path']);
+		$urlset['path'] = '/web/' . str_replace('./', '', $urlset['path']);
 		$urlset['ip'] = '127.0.0.1';
 	}
 	

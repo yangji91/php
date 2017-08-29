@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -20,7 +20,7 @@ if ($do == 'check') {
 
 	$params = _cloud_build_params();
 	$params['method'] = 'application.build';
-	$response = cloud_request('http://v2.addons.we7.cc/gateway.php', $params);
+	$response = cloud_request('http://addons.we7.cc/wapi/gateway2', $params);
 	$file = IA_ROOT . '/data/application.build';
 	$cloud_data = _cloud_shipping_parse($response, $file);
 

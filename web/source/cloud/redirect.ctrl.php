@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -50,7 +50,7 @@ if ($do == 'buybranch') {
 	$response = json_decode($response['content'], true);
 
 	if (is_error($response['message'])) {
-		itoast($response['message']['message'], url('module/manage-system'), 'error');
+		itoast($response['message']['message'], url('system/module'), 'error');
 	}
 
 	$params = array(

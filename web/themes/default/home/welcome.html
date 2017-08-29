@@ -43,7 +43,9 @@
 				<a href="./index.php?c=article&a=notice-show" class="color-default pull-right">更多</a>
 				<div class="menu">
 					<span class="topic active notice">公告</span>
+					{if $_W['isfounder']}
 					<span class="topic we7notice">微擎公告</span>
+					{/if}
 				</div>
 			</div>
 			<ul class="list-group active">
@@ -56,12 +58,13 @@
 				</li>
 			</ul>
 			<ul class="list-group">
-				<script type="text/javascript" src="//bbs.we7.cc/api.php?mod=js&bid=20"></script>
+				<script type="text/javascript" src="//www.we7.cc/api.php?mod=js&bid=323"></script>
 			</ul>
-		</div>	
+		</div>
+        {if $_W['isfounder']}		
 		<div class="panel we7-panel apply-list">
 			<div class="panel-heading">
-				<a href="http://s.we7.cc" target="_blank" class="color-default pull-right">查看更多应用</a>
+				<a href="http://we7.cc" target="_blank" class="color-default pull-right">查看更多应用</a>
 				微擎推荐
 			</div>
 			<div class="panel-body text-center">
@@ -73,6 +76,7 @@
 				</a>
 			</div>
 		</div>
+		{/if}
 	</div>
 </div>
 <script>

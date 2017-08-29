@@ -1,14 +1,13 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
 load()->model('mc');
 
 uni_user_permission_check('mc_member');
-
 $dos = array('display', 'post','del', 'add', 'group', 'credit_record', 'credit_stat', 'register_setting', 'credit_setting', 'save_credit_setting', 'save_tactics_setting');
 $do = in_array($do, $dos) ? $do : 'display';
 if ($do == 'save_tactics_setting') {
@@ -28,7 +27,6 @@ if ($do == 'save_credit_setting') {
 	uni_setting_save('creditnames', $credit_setting);
 	iajax(0, '');
 }
-
 if ($do == 'register_setting') {
 	$_W['page']['title'] = '注册设置';
 	if (checksubmit('submit')) {
@@ -39,7 +37,7 @@ if ($do == 'register_setting') {
 		}
 	}
 	$setting = uni_setting_load('passport');
-	$register_setting = !empty($setting['passport']) ? $setting['passport'] : array();
+	$register_setting = $setting['passport'];
 	template('mc/member');
 }
 
@@ -231,12 +229,14 @@ if($do == 'post') {
 			}
 			unset($_GPC['uid']);
 			if(!empty($_GPC['fanid'])) {
-								if(empty($_GPC['email']) && empty($_GPC['mobile'])) {
+				//将粉丝注册为会员
+				if(empty($_GPC['email']) && empty($_GPC['mobile'])) {
 					$_GPC['email'] = md5($_GPC['openid']) . '@we7.cc';
 				}
 				$fanid = intval($_GPC['fanid']);
 				$fan_info = pdo_get('mc_mapping_fans', array('fanid' => $fanid), 'openid');
-								$struct = array_keys(mc_fields());
+				//没有使用mc_update函数
+				$struct = array_keys(mc_fields());
 				$struct[] = 'birthyear';
 				$struct[] = 'birthmonth';
 				$struct[] = 'birthday';
@@ -257,7 +257,8 @@ if($do == 'post') {
 					}
 				}
 				$condition = '';
-								if(!empty($_GPC['email'])) {
+				//判断email,mobile是否唯一
+				if(!empty($_GPC['email'])) {
 					$emailexists = pdo_fetchcolumn("SELECT email FROM ".tablename('mc_members')." WHERE uniacid = :uniacid AND email = :email " . $condition, array(':uniacid' => $_W['uniacid'], ':email' => trim($_GPC['email'])));
 					if($emailexists) {
 						unset($_GPC['email']);
@@ -338,7 +339,6 @@ if($do == 'post') {
 	$addresss = pdo_getall('mc_member_address', array('uid' => $uid, 'uniacid' => $_W['uniacid']));
 	template('mc/member-post');
 }
-
 if($do == 'del') {
 	if(!empty($_GPC['uid'])) {
 		if (is_array($_GPC['uid'])) {

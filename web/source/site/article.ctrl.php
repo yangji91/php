@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 load()->func('file');
@@ -104,19 +104,18 @@ if ($do == 'display') {
 			'click' => intval($_GPC['click'])
 		);
 		if (!empty($_GPC['thumb'])) {
-			if (file_is_image($_GPC['thumb'])) {
-				$data['thumb'] = $_GPC['thumb'];
-			}
+			$data['thumb'] = $_GPC['thumb'];
 		} elseif (!empty($_GPC['autolitpic'])) {
 			$match = array();
+			$file_name = file_random_name(ATTACHMENT_ROOT.'images/'.$_W['uniacid'].'/'.date('Y/m').'/', 'jpg');
+			$path = 'images/'.$_W['uniacid'].'/'.date('Y/m').'/'.$file_name;
 			preg_match('/&lt;img.*?src=&quot;(.*?)&quot;/', $_GPC['content'], $match);
 			if (!empty($match[1])) {
 				$url = $match[1];
-				$file = file_remote_attach_fetch($url);
-				if (!is_error($file)) {
-					$data['thumb'] = $file;
-					file_remote_upload($file);
-				}
+				$file = file_get_contents($url);
+				file_write($path, $file);
+				$data['thumb'] = $path;
+				file_remote_upload($path);
 			}
 		} else {
 			$data['thumb'] = '';
@@ -202,12 +201,12 @@ if ($do == 'display') {
 	if (checksubmit('submit')) {
 		foreach ($_GPC['rid'] as $key => $id) {
 			$id = intval($id);
-			$row = pdo_get('site_article', array('id' => $id, 'uniacid' => $_W['uniacid']));
+			$row = pdo_fetch("SELECT id,rid,kid,thumb FROM ".tablename('site_article')." WHERE id = :id", array(':id' => $id));
 			
 			if (empty($row)) {
 				itoast('抱歉，文章不存在或是已经被删除！', '', '');
 			}
-			if (!empty($row['thumb']) && file_is_image($row['thumb'])) {
+			if (!empty($row['thumb'])) {
 				file_delete($row['thumb']);
 			}
 			if (!empty($row['rid'])) {

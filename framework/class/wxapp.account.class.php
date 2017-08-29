@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
  
 defined('IN_IA') or exit('Access Denied');
@@ -26,12 +26,19 @@ class WxappAccount extends WeAccount {
 	
 	
 	public function pkcs7Encode($encrypt_data, $iv) {
+		require_once IA_ROOT . '/framework/library/pkcs7/pkcs7Encoder.php';
+		
+		$aes_cipher = base64_decode($encrypt_data);
+		$iv = base64_decode($iv);
 		$key = base64_decode($_SESSION['session_key']);
-		$result = aes_pkcs7_decode($encrypt_data, $key, $iv);
-		if (is_error($result)) {
-			return error(1, '解密失败');
+		
+		$pc = new Prpcrypt($key);
+		$result = $pc->decrypt($aes_cipher, $iv);
+		
+		if ($result[0] != 0) {
+			return error($result[0], '解密失败');
 		}
-		$result = json_decode($result, true);
+		$result = json_decode($result[1], true);
 		if (empty($result)) {
 			return error(1, '解密失败');
 		}

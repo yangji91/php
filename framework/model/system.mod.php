@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -14,11 +14,11 @@ function system_menu_permission_list($role = '') {
 	}
 		if ($role == ACCOUNT_MANAGE_NAME_OPERATOR) {
 		unset($system_menu['appmarket']);
-		unset($system_menu['advertisement']);
+		unset($system_menu['adviertisement']);
 		unset($system_menu['system']);
 	} if ($role == ACCOUNT_MANAGE_NAME_OPERATOR) {
 		unset($system_menu['appmarket']);
-		unset($system_menu['advertisement']);
+		unset($system_menu['adviertisement']);
 	}
 	return $system_menu;
 }

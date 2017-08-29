@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 
 
@@ -87,13 +87,13 @@ function mc_update($uid, $fields) {
 		$condition = ' AND uid != ' . $uid;
 	}
 		if (!empty($fields['email'])) {
-		$emailexists = pdo_fetchcolumn("SELECT email FROM " . tablename('mc_members') . " WHERE uniacid = :uniacid AND email = :email " . $condition, array(':uniacid' => mc_current_real_uniacid(), ':email' => trim($fields['email'])));
+		$emailexists = pdo_fetchcolumn("SELECT email FROM " . tablename('mc_members') . " WHERE uniacid = :uniacid AND email = :email " . $condition, array(':uniacid' => $_W['uniacid'], ':email' => trim($fields['email'])));
 		if ($emailexists) {
 			unset($fields['email']);
 		}
 	}
 	if (!empty($fields['mobile'])) {
-		$mobilexists = pdo_fetchcolumn("SELECT mobile FROM " . tablename('mc_members') . " WHERE uniacid = :uniacid AND mobile = :mobile " . $condition, array(':uniacid' => mc_current_real_uniacid(), ':mobile' => trim($fields['mobile'])));
+		$mobilexists = pdo_fetchcolumn("SELECT mobile FROM " . tablename('mc_members') . " WHERE uniacid = :uniacid AND mobile = :mobile " . $condition, array(':uniacid' => $_W['uniacid'], ':mobile' => trim($fields['mobile'])));
 		if ($mobilexists) {
 			unset($fields['mobile']);
 		}
@@ -102,12 +102,12 @@ function mc_update($uid, $fields) {
 		if(empty($fields['mobile']) && empty($fields['email'])) {
 			return false;
 		}
-		$fields['uniacid'] = mc_current_real_uniacid();
+		$fields['uniacid'] = $_W['uniacid'];
 		$fields['createtime'] = TIMESTAMP;
 		pdo_insert('mc_members', $fields);
 		$insert_id = pdo_insertid();
 		if (!empty($openid)) {
-			pdo_update('mc_mapping_fans', array('uid' => $insert_id), array('uniacid' => mc_current_real_uniacid(), 'openid' => $openid));
+			pdo_update('mc_mapping_fans', array('uid' => $insert_id), array('uniacid' => $_W['uniacid'], 'openid' => $openid));
 		}
 		return $insert_id;
 	} else {
@@ -185,20 +185,18 @@ function mc_fetch_one($uid) {
 		return $cache;
 	}
 	$result = pdo_get('mc_members', array('uid' => $uid));
-	if (!empty($result)) {
-		$result['avatar'] = tomedia($result['avatar']);
-		$result['credit1'] = floatval($result['credit1']);
-		$result['credit2'] = floatval($result['credit2']);
-		$result['credit3'] = floatval($result['credit3']);
-		$result['credit4'] = floatval($result['credit4']);
-		$result['credit5'] = floatval($result['credit5']);
-		$result['credit6'] = floatval($result['credit6']);
-	} else {
-		$result = array();
-	}
+	$result['avatar'] = tomedia($result['avatar']);
+	$result['credit1'] = floatval($result['credit1']);
+	$result['credit2'] = floatval($result['credit2']);
+	$result['credit3'] = floatval($result['credit3']);
+	$result['credit4'] = floatval($result['credit4']);
+	$result['credit5'] = floatval($result['credit5']);
+	$result['credit6'] = floatval($result['credit6']);
+
 	cache_write($cachekey, $result);
 	return $result;
 }
+
 
 function mc_fansinfo($openidOruid, $acid = 0, $uniacid = 0){
 	global $_W;
@@ -842,7 +840,7 @@ function mc_openid2uid($openid) {
 		return $openid;
 	}
 	if (is_string($openid)) {
-		$fans_info = pdo_get('mc_mapping_fans', array('uniacid' => mc_current_real_uniacid(), 'openid' => $openid), array('uid'));
+		$fans_info = pdo_get('mc_mapping_fans', array('uniacid' => $_W['uniacid'], 'openid' => $openid), array('uid'));
 		return !empty($fans_info) ? $fans_info['uid'] : false;
 	}
 	if (is_array($openid)) {
@@ -856,7 +854,7 @@ function mc_openid2uid($openid) {
 		}
 		if (!empty($fans)) {
 			$sql = 'SELECT uid, openid FROM ' . tablename('mc_mapping_fans') . " WHERE `uniacid`=:uniacid AND `openid` IN ('" . implode("','", $fans) . "')";
-			$pars = array(':uniacid' => mc_current_real_uniacid());
+			$pars = array(':uniacid' => $_W['uniacid']);
 			$fans = pdo_fetchall($sql, $pars, 'uid');
 			$fans = array_keys($fans);
 			$uids = array_merge((array)$uids, $fans);
@@ -870,7 +868,7 @@ function mc_openid2uid($openid) {
 function mc_uid2openid($uid) {
 	global $_W;
 	if (is_numeric($uid)) {
-		$fans_info = pdo_get('mc_mapping_fans', array('uniacid' => mc_current_real_uniacid(), 'uid' => $uid), 'openid');
+		$fans_info = pdo_get('mc_mapping_fans', array('uniacid' => $_W['uniacid'], 'uid' => $uid), 'openid');
 		return !empty($fans_info['openid']) ? $fans_info['openid'] : false;
 	}
 	if (is_string($uid)) {
@@ -893,7 +891,7 @@ function mc_uid2openid($uid) {
 		}
 		if (!empty($uids)) {
 			$sql = 'SELECT openid FROM ' . tablename('mc_mapping_fans') . " WHERE `uniacid`=:uniacid AND `uid` IN (" . implode(",", $uids) . ")";
-			$pars = array(':uniacid' => mc_current_real_uniacid());
+			$pars = array(':uniacid' => $_W['uniacid']);
 			$fans_info = pdo_fetchall($sql, $pars, 'openid');
 			$fans_info = array_keys($fans_info);
 			$openids = array_merge($openids, $fans_info);
@@ -922,7 +920,7 @@ function mc_group_update($uid = 0) {
 	}
 	$groupid = $user['groupid'];
 	$credit = $user['credit1'] + $user['credit6'];
-	$groups = mc_groups();
+	$groups = $_W['uniaccount']['groups'];
 	if(empty($groups)) {
 		return false;
 	}
@@ -1741,15 +1739,5 @@ function mc_card_grant_credit($openid, $card_fee, $storeid = 0, $modulename) {
 		return error(0, $num);
 	} else {
 		return error(-1, '');
-	}
-}
-
-
-function mc_current_real_uniacid() {
-	global $_W;
-	if (!empty($_W['account']['link_uniacid']) || (!empty($_W['account']) && $_W['uniacid'] != $_W['account']['uniacid'])) {
-		return $_W['account']['uniacid'];
-	} else {
-		return $_W['uniacid'];
 	}
 }

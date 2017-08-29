@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 load()->model('reply');
@@ -117,11 +117,13 @@ if ($do == 'display') {
 		$setting = $setting['default_message'] ? $setting['default_message'] : array();
 		$module = uni_modules();
 	}
-	if ($m == 'default' || $m == 'welcome') {
-		$setting = uni_setting($_W['uniacid'], array($m));
-		if (!empty($setting[$m])) {
-			$rule_keyword_id = pdo_getcolumn('rule_keyword', array('uniacid' => $_W['uniacid'], 'content' => $setting[$m]), 'id');
-		}
+	if ($m == 'welcome') {
+		$setting = uni_setting($_W['uniacid'], array('welcome'));
+		$ruleid = pdo_getcolumn('rule_keyword', array('uniacid' => $_W['uniacid'], 'content' => $setting['welcome']), 'rid');
+	}
+	if ($m == 'default') {
+		$setting = uni_setting($_W['uniacid'], array('default'));
+		$ruleid = pdo_getcolumn('rule_keyword', array('uniacid' => $_W['uniacid'], 'content' => $setting['default']), 'rid');
 	}
 	if ($m == 'service') {
 		$service_list = reply_getall_common_service();
@@ -315,16 +317,38 @@ if ($do == 'post') {
 		}
 		template('platform/specialreply-post');
 	}
-	if ($m == 'default' || $m == 'welcome') {
+	if ($m == 'welcome') {
 		if (checksubmit('submit')) {
-			$rule_keyword_id = intval(trim(htmlspecialchars_decode($_GPC['reply']['reply_keyword']), "\""));
-			if (!empty($rule_keyword_id)) {
-				$rule = pdo_get('rule_keyword', array('id' => $rule_keyword_id, 'uniacid' => $_W['uniacid']));
+			$rule_id = intval(trim(htmlspecialchars_decode($_GPC['reply']['reply_keyword']), "\""));
+			if (!empty($rule_id)) {
+				$rule = pdo_get('rule_keyword', array('rid' => $rule_id, 'uniacid' => $_W['uniacid']));
 				$settings = array(
-					$m => $rule['content']
+					'welcome' => $rule['content']
 				);
 			} else {
-				$settings = array($m => '');
+				$settings = array('welcome' => '');
+			}
+			$item = pdo_fetch ("SELECT uniacid FROM " . tablename ('uni_settings') . " WHERE uniacid=:uniacid", array (':uniacid' => $_W['uniacid']));
+			if (!empty($item)) {
+				pdo_update ('uni_settings', $settings, array ('uniacid' => $_W['uniacid']));
+			} else {
+				$settings['uniacid'] = $_W['uniacid'];
+				pdo_insert ('uni_settings', $settings);
+			}
+			cache_delete("unisetting:{$_W['uniacid']}");
+			itoast('系统回复更新成功！', url('platform/reply', array('m' => 'welcome')), 'success');
+		}
+	}
+	if ($m == 'default') {
+		if (checksubmit('submit')) {
+			$rule_id = intval(trim(htmlspecialchars_decode($_GPC['reply']['reply_keyword']), "\""));
+			if (!empty($rule_id)) {
+				$rule = pdo_get('rule_keyword', array('rid' => $rule_id, 'uniacid' => $_W['uniacid']));
+				$settings = array(
+					'default' => $rule['content']
+				);
+			} else {
+				$settings = array('default' => '');
 			}
 			$item = pdo_fetch("SELECT uniacid FROM " . tablename('uni_settings') . " WHERE uniacid=:uniacid", array(':uniacid' => $_W['uniacid']));
 			if (!empty($item)){
@@ -334,7 +358,7 @@ if ($do == 'post') {
 				pdo_insert('uni_settings', $settings);
 			}
 			cache_delete("unisetting:{$_W['uniacid']}");
-			itoast('系统回复更新成功！', url('platform/reply', array('m' => $m)), 'success');
+			itoast('系统回复更新成功！', url('platform/reply', array('m' => 'default')), 'success');
 		}
 	}
 	if ($m == 'apply') {
@@ -344,7 +368,7 @@ if ($do == 'post') {
 			if ($value['type'] == 'system') {
 				unset($installedmodulelist[$key]);
 			}
-			$value['official'] = empty($value['issystem']) && (strexists($value['author'], 'WeEngine Team') || strexists($value['author'], '微擎团队'));
+			$value['official'] = empty($value['issystem']) && (strexists($value['author'], 'WeEngine Team') || strexists($value['author'], '微擎社区'));
 		}
 		unset($value);
 		foreach ($installedmodulelist as $name => $module) {

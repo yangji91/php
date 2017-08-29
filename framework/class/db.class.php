@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 define('PDO_DEBUG', true);
@@ -54,6 +54,7 @@ class DB {
 		}
 		$this->pdo = new $dbclass($dsn, $cfg['username'], $cfg['password'], $options);
 		//$this->pdo->setAttribute(pdo::ATTR_EMULATE_PREPARES, false);
+
 		$sql = "SET NAMES '{$cfg['charset']}';";
 		$this->pdo->exec($sql);
 		$this->pdo->exec("SET sql_mode='';");
@@ -328,8 +329,7 @@ class DB {
 		}
 		if (is_array($params)) {
 			$result['fields'] = '';
-			$index = 0; 			foreach ($params as $fields => $value) {
-				$index++;
+			foreach ($params as $fields => $value) {
 				$operator = '';
 				if (strpos($fields, ' ') !== FALSE) {
 					list($fields, $operator) = explode(' ', $fields, 2);
@@ -356,17 +356,16 @@ class DB {
 				if (is_array($value) && !empty($value)) {
 					$insql = array();
 										$value = array_values($value);
-					foreach ($value as $v) {
-						$insql[] = ":{$suffix}{$fields}_{$index}";
-						$result['params'][":{$suffix}{$fields}_{$index}"] = is_null($v) ? '' : $v;
-						$index++;
+					foreach ($value as $k => $v) {
+						$insql[] = ":{$suffix}{$fields}_{$k}";
+						$result['params'][":{$suffix}{$fields}_{$k}"] = is_null($v) ? '' : $v;
 					}
 					$result['fields'] .= $split . "`$fields` {$operator} (".implode(",", $insql).")";
 					$split = ' ' . $glue . ' ';
 				} else {
-					$result['fields'] .= $split . "`$fields` {$operator}  :{$suffix}{$fields}_{$index}";
+					$result['fields'] .= $split . "`$fields` {$operator}  :{$suffix}$fields";
 					$split = ' ' . $glue . ' ';
-					$result['params'][":{$suffix}{$fields}_{$index}"] = is_null($value) || is_array($value) ? '' : $value;
+					$result['params'][":{$suffix}$fields"] = is_null($value) || is_array($value) ? '' : $value;
 				}
 			}
 		}

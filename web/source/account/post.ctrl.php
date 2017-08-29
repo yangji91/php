@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -107,7 +107,7 @@ if($do == 'base') {
 			cache_delete("accesstoken:{$acid}");
 			cache_delete("jsticket:{$acid}");
 			cache_delete("cardticket:{$acid}");
-
+			module_build_privileges();
 			iajax(0, '修改成功！', '');
 		}else {
 			iajax(1, '修改失败！', '');
@@ -296,11 +296,14 @@ if($do == 'modules_tpl') {
 	$modules = pdo_getall('modules', array('issystem !=' => 1), array('mid', 'name', 'title'), 'name');
 	$templates = pdo_getall('site_templates', array(), array('id', 'name', 'title'));
 	$extend = pdo_get('uni_group', array('uniacid' => $uniacid));
-	$extend['modules'] = $current_module_names = iunserializer($extend['modules']);
+	$extend['modules'] = iunserializer($extend['modules']);
 	$extend['templates'] = iunserializer($extend['templates']);
 	if (!empty($extend['modules'])) {
-		foreach ($extend['modules'] as $module_key => $module_val) {
-			$extend['modules'][$module_key] = module_fetch($module_val);
+		$extend['modules'] = pdo_getall('modules', array('name' => $extend['modules']), array('mid', 'title', 'name'));
+		if (!empty($extend['modules'])) {
+			foreach ($extend['modules'] as &$module_info) {
+				$module_info['logo'] = IA_ROOT . "/addons/" . $module_info['name'] . '/icon-custom.jpg';
+			}
 		}
 	}
 	if (!empty($extend['templates'])) {

@@ -1,6 +1,5 @@
 <?php
 defined('IN_IA') or exit('Access Denied');
-load()->func('file');
 
 
 function material_sync($material, $exist_material, $type) {
@@ -123,11 +122,8 @@ function material_news_set($data, $attach_id) {
 		pdo_update('wechat_attachment', $wechat_attachment, array(
 			'id' => $attach_id
 		));
-		pdo_delete('wechat_news', array('attach_id' => $attach_id, 'uniacid' => $_W['uniacid']));
 		foreach ($post_news as $id => $news) {
-			$news['attach_id'] = $attach_id;
-			unset($news['id']);
-			pdo_insert('wechat_news', $news);
+			pdo_update('wechat_news', $news, array('id' => $news['id']));
 		}
 		cache_delete(cache_system_key('material_reply:' . $attach_id));
 	} else {
@@ -262,7 +258,7 @@ function material_parse_content($content) {
 	$images = material_get_image_url($content);
 	if (!empty($images)) {
 		foreach ($images as $image) {
-			$thumb = file_remote_attach_fetch(tomedia($image), 1024, 'material/images');
+			$thumb = file_fetch(tomedia($image), 1024, 'material/images');
 			if(is_error($thumb)) {
 				return $thumb;
 			}
@@ -342,7 +338,7 @@ function material_local_upload_by_url($url, $type='images') {
 	$account_api = WeAccount::create($_W['acid']);
 	if (! empty($_W['setting']['remote']['type'])) {
 		$remote_file_url = tomedia($url);
-		$filepath = file_remote_attach_fetch($remote_file_url,0,'');
+		$filepath = file_fetch($remote_file_url,0,'');
 		if(is_error($filepath)) {
 			return $filepath;
 		}

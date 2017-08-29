@@ -2,7 +2,7 @@
 
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 
 defined('IN_IA') or exit('Access Denied');
@@ -26,7 +26,6 @@ function alipay_build($params, $alipay = array()) {
 	$set['seller_id'] = $alipay['account'];
 	$set['payment_type'] = 1;
 	$set['body'] = $_W['uniacid'];
-	$set['app_pay'] = 'Y';
 	$prepares = array();
 	foreach($set as $key => $value) {
 		if($key != 'sign' && $key != 'sign_type') {
@@ -39,10 +38,6 @@ function alipay_build($params, $alipay = array()) {
 	$set['sign'] = md5($string);
 
 	$response = ihttp_request(ALIPAY_GATEWAY . '?' . http_build_query($set, '', '&'), array(), array('CURLOPT_FOLLOWLOCATION' => 0));
-	if (empty($response['headers']['Location'])) {
-		exit(iconv('gbk', 'utf-8', $response['content']));
-		return;
-	}
 	return array('url' => $response['headers']['Location']);
 }
 

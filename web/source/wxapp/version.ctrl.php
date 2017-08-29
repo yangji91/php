@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -9,9 +9,9 @@ load()->model('module');
 load()->model('wxapp');
 load()->model('welcome');
 
-$dos = array('display', 'home', 'module_link_uniacid', 'search_link_account', 'module_unlink_uniacid', 'get_daily_visittrend', 'front_download', 'module_entrance_link');
+$dos = array('display', 'home', 'module_link_uniacid', 'search_link_account', 'module_unlink_uniacid', 'get_daily_visittrend', 'front_download');
 $do = in_array($do, $dos) ? $do : 'display';
-if (in_array($do, array('module_link_uniacid', 'front_download', 'module_entrance_link'))) {
+if ($do == 'module_link_uniacid' || $do == 'front_download') {
 	uni_user_permission_check('wxapp_' . $do, true, 'wxapp');
 }
 $_W['page']['title'] = '小程序 - 管理';
@@ -99,18 +99,7 @@ if ($do == 'get_daily_visittrend') {
 	}
 	iajax(0, array('yesterday' => $yesterday_stat), '');
 }
-
 if ($do == 'front_download') {
 	$wxapp_versions_info = wxapp_version($version_id);
 	template('wxapp/version-front-download');
-}
-
-if ($do == 'module_entrance_link') {
-	$wxapp_modules = pdo_getcolumn('wxapp_versions', array('id' => $version_id), 'modules');
-	$module_info = array();
-	if (!empty($wxapp_modules)) {
-		$module_info = iunserializer($wxapp_modules);
-		$module_info = pdo_getall('modules_bindings', array('module' => array_keys($module_info), 'entry' => 'page'));
-	}
-	template('wxapp/version-entrance');
 }

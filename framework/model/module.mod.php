@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -206,51 +206,6 @@ function module_build_form($name, $rid, $option = array()) {
 }
 
 
-function module_save_group_package($package) {
-	global $_W;
-	load()->model('user');
-	load()->model('cache');
-
-	if (empty($package['name'])) {
-		return error(-1, '请输入套餐名');
-	}
-
-	if (user_is_vice_founder()) {
-		$package['owner_uid'] = $_W['uid'];
-	}
-	if (!empty($package['modules'])) {
-		$package['modules'] = iserializer($package['modules']);
-	}
-
-	if (!empty($package['templates'])) {
-		$templates = array();
-		foreach ($package['templates'] as $template) {
-			$templates[] = $template['id'];
-		}
-		$package['templates'] = iserializer($templates);
-	}
-
-	if (!empty($package['id'])) {
-		$name_exist = pdo_get('uni_group', array('uniacid' => 0, 'id <>' => $package['id'], 'name' => $package['name']));
-	} else {
-		$name_exist = pdo_get('uni_group', array('uniacid' => 0, 'name' => $package['name']));
-	}
-
-	if (!empty($name_exist)) {
-		return error(-1, '套餐名已存在');
-	}
-
-	if (!empty($package['id'])) {
-		pdo_update('uni_group', $package, array('id' => $package['id']));
-		cache_build_account_modules();
-	} else {
-		pdo_insert('uni_group', $package);
-	}
-
-	cache_build_uni_group();
-	return error(0, '添加成功');
-}
-
 function module_fetch($name) {
 	global $_W;
 	$cachekey = cache_system_key(CACHE_KEY_MODULE_INFO, $name);
@@ -339,14 +294,14 @@ function module_build_privileges() {
 
 
 
-function module_get_all_unistalled($status, $cache = true)  {
+function module_get_all_unistalled($status)  {
 	global $_GPC;
 	load()->func('communication');
 	load()->model('cloud');
 	load()->classs('cloudapi');
 	$status = $status == 'recycle' ? 'recycle' : 'uninstalled';
 	$uninstallModules =  cache_load(cache_system_key('module:all_uninstall'));
-	if (!$cache && $status == 'uninstalled') {
+	if ($_GPC['c'] == 'system' && $_GPC['a'] == 'module' && $_GPC['do'] == 'not_installed' && $status == 'uninstalled') {
 		$cloud_api = new CloudApi();
 		$get_cloud_m_count = $cloud_api->get('site', 'stat', array('module_quantity' => 1), 'json');
 		$cloud_m_count = $get_cloud_m_count['module_quantity'];
@@ -585,7 +540,7 @@ function module_upgrade_new($type = 'account') {
 		foreach ($upgrade_modules as $key => &$module) {
 			$module_fetch = module_fetch($key);
 			$module['logo'] = $module_fetch['logo'];
-			$module['link'] = url('module/manage-system/module_detail', array('name' => $module['name'], 'show' => 'upgrade'));
+			$module['link'] = url('system/module/module_detail', array('name' => $module['name'], 'show' => 'upgrade'));
 		}
 		unset($module);
 	}
@@ -669,9 +624,6 @@ function module_link_uniacid_fetch($uid, $module_name) {
 				continue;
 			}
 			foreach ($account_value['versions'] as $version_key => $version_value) {
-				if (empty($version_value['modules'])) {
-					continue;
-				}
 				if ($version_value['modules'][0]['name'] != $module_name) {
 					continue;
 				}
@@ -765,6 +717,8 @@ function module_save_switch($module_name, $uniacid = 0, $version_id = 0) {
 }
 
 
+
+
 function module_last_switch($module_name) {
 	global $_GPC;
 	$module_name = trim($module_name);
@@ -774,25 +728,4 @@ function module_last_switch($module_name) {
 	$cache_key = cache_system_key(CACHE_KEY_ACCOUNT_SWITCH, $_GPC['__switch']);
 	$cache_lastaccount = (array)cache_load($cache_key);
 	return $cache_lastaccount[$module_name];
-}
-
-
-function module_clerk_info($module_name) {
-	$user_permissions = array();
-	$module_name = trim($module_name);
-	if (empty($module_name)) {
-		return $user_permissions;
-	}
-	$params = array(
-			':role' => ACCOUNT_MANAGE_NAME_CLERK,
-			':type' => $module_name,
-	);
-	$sql = "SELECT u.uid, p.permission FROM " . tablename('uni_account_users') . " u," . tablename('users_permission') . " p WHERE u.uid = p.uid AND u.uniacid = p.uniacid AND u.role = :role AND p.type = :type";
-	$user_permissions = pdo_fetchall($sql, $params, 'uid');
-	if (!empty($user_permissions)) {
-		foreach ($user_permissions as $key => $value) {
-			$user_permissions[$key]['user_info'] = user_single($value['uid']);
-		}
-	}
-	return $user_permissions;
 }

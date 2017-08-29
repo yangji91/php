@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 define('IN_API', true);
 require_once './framework/bootstrap.inc.php';
@@ -143,7 +143,6 @@ class WeEngine {
 			$row = array();
 			$row['isconnect'] = 1;
 			pdo_update('account', $row, array('acid' => $_W['acid']));
-			cache_delete("uniaccount:{$_W['uniacid']}");
 			exit(htmlspecialchars($_GET['echostr']));
 		}
 		if(strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
@@ -325,7 +324,6 @@ class WeEngine {
 		}
 		if(!empty($fans)) {
 			if ($message['event'] == 'unsubscribe') {
-				cache_build_memberinfo($fans['uid']);
 				pdo_update('mc_mapping_fans', array('follow' => 0, 'unfollowtime' => TIMESTAMP), array('fanid' => $fans['fanid']));
 				pdo_delete('mc_fans_tag_mapping', array('fanid' => $fans['fanid']));
 			} elseif ($message['event'] != 'ShakearoundUserShake' && $message['type'] != 'trace') {
@@ -333,6 +331,7 @@ class WeEngine {
 				if (empty($fans['follow'])) {
 					$rec['follow'] = 1;
 					$rec['followtime'] = $message['time'];
+					$rec['unfollowtime'] = 0;
 				}
 				$member = array();
 				if(!empty($fans['uid'])){
@@ -402,9 +401,6 @@ class WeEngine {
 			@$obj->receive();
 		}
 		load()->func('communication');
-		if (empty($subscribe[$this->message['type']])) {
-			$subscribe[$this->message['type']] = $subscribe[$this->message['event']];
-		}
 		if (!empty($subscribe[$this->message['type']])) {
 			foreach ($subscribe[$this->message['type']] as $modulename) {
 								$response = ihttp_request(wurl('utility/subscribe/receive'), array(

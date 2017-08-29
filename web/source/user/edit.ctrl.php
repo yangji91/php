@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -30,8 +30,6 @@ if ($do == 'edit_base') {
 	$user['last_visit'] = date('Y-m-d H:i:s', $user['lastvisit']);
 	$user['end'] = $user['endtime'] == 0 ? '永久' : date('Y-m-d', $user['endtime']);
 	$user['endtype'] = $user['endtime'] == 0 ? 1 : 2;
-	$user['url'] = user_invite_register_url($uid);
-	
 	if (!empty($profile)) {
 		$profile['reside'] = array(
 			'province' => $profile['resideprovince'],
@@ -66,7 +64,7 @@ if ($do == 'edit_modules_tpl') {
 			iajax(-1, '参数错误！', '');
 		}
 	}
-	$groups = user_group();
+	$groups = pdo_getall('users_group', array(), array('id', 'name'), 'id');
 	$group_info = user_group_detail_info($user['groupid']);
 
 	template('user/edit-modules-tpl');

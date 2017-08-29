@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 load()->model('module');
@@ -741,7 +741,8 @@ abstract class WeBase {
 				$filename .= '.' . $type;
 			}
 		}
-		if (file_put_contents(ATTACHMENT_ROOT . $path . $filename, $file_string)) {
+		
+		if (file_put_contents(ATTACHMENT_ROOT . '/' . $path . $filename, $file_string)) {
 			file_remote_upload($path);
 			return $path . $filename;
 		} else {
@@ -1176,16 +1177,6 @@ abstract class WeModuleSite extends WeBase {
 		}
 		$you = 0;
 		include $this->template('common/paycenter');
-	}
-
-	
-	protected function refund($tid, $fee = 0, $reason = '') {
-		load()->model('refund');
-		$refund_id = refund_create_order($tid, $this->module['name'], $fee, $reason);
-		if (is_error($refund_id)) {
-			return $refund_id;
-		}
-		return refund($refund_id);
 	}
 
 	

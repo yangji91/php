@@ -1,7 +1,7 @@
-<?php
+<?php 
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 load()->model('reply');
@@ -64,7 +64,7 @@ if ($do == 'module') {
 	}
 	$module = $_W['current_module'] = module_fetch($entry['module']);
 	$reply = pdo_get('cover_reply', array('module' => $entry['module'], 'do' => $entry['do'], 'uniacid' => $_W['uniacid']));
-
+	
 	if (checksubmit('submit')) {
 		if (trim($_GPC['keywords']) == '') {
 			itoast('必须输入触发关键字.', '', '');
@@ -93,7 +93,7 @@ if ($do == 'module') {
 			$result = pdo_insert('rule', $rule);
 			$rid = pdo_insertid();
 		}
-
+	
 		if (!empty($rid)) {
 						pdo_delete('rule_keyword', array('rid' => $rid, 'uniacid' => $_W['uniacid']));
 			$keyword_row = array(
@@ -109,7 +109,7 @@ if ($do == 'module') {
 				$keyword_insert['content'] = $keyword['content'];
 				pdo_insert('rule_keyword', $keyword_insert);
 			}
-
+	
 			$entry = array(
 				'uniacid' => $_W['uniacid'],
 				'multiid' => 0,
@@ -131,7 +131,7 @@ if ($do == 'module') {
 			itoast('封面保存失败, 请联系网站管理员！', '', 'error');
 		}
 	}
-
+	
 	if (!empty($module['isrulefields'])) {
 		$url = url('platform/reply', array('m' => $module['name']));
 	}
@@ -139,7 +139,7 @@ if ($do == 'module') {
 		$url = url('platform/cover', array('m' => $module['name']));
 	}
 	define('ACTIVE_FRAME_URL', $url);
-
+	
 	if (!empty($reply)) {
 		if (!empty($reply['thumb'])) {
 			$reply['src'] = tomedia($reply['thumb']);
@@ -152,7 +152,6 @@ if ($do == 'module') {
 			'url_show' => $entry['url_show'],
 			'rule' => array(
 				'displayorder' => '0',
-				'status' => '1'
 			)
 		);
 	}

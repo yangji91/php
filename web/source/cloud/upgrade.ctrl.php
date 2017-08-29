@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -24,7 +24,7 @@ if (empty($_W['setting']['site']['profile_perfect'])) {
 if ($do == 'upgrade') {
 	$_W['page']['title'] = '一键更新 - 云服务';
 	if (empty($_W['setting']['cloudip']) || $_W['setting']['cloudip']['expire'] < TIMESTAMP) {
-		$cloudip = gethostbyname('v2.addons.we7.cc');
+		$cloudip = gethostbyname(base64_decode('Y2xvdWRpcC53ZTguY2x1Yg=='));
 		if (empty($cloudip) || !preg_match('/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/', $cloudip)) {
 			itoast('云服务域名解析失败，请查看服务器DNS设置或是在“云服务诊断”中手动设置云服务IP', url('cloud/diagnose'), 'error');
 		}
@@ -54,7 +54,38 @@ if ($do == 'upgrade') {
 	}
 	cache_delete('cloud:transtoken');
 	if (!empty($upgrade['schemas'])) {
-		$upgrade['database'] = cloud_build_schemas($upgrade['schemas']);
+		$upgrade['database'] = array();
+		foreach ($upgrade['schemas'] as $remote) {
+			$row = array();
+			$row['tablename'] = $remote['tablename'];
+			$name = substr($remote['tablename'], 4);
+			$local = db_table_schema(pdo(), $name);
+			unset($remote['increment']);
+			unset($local['increment']);
+			if (empty($local)) {
+				$row['new'] = true;
+			} else {
+				$row['new'] = false;
+				$row['fields'] = array();
+				$row['indexes'] = array();
+				$diffs = db_schema_compare($local, $remote);
+				if (!empty($diffs['fields']['less'])) {
+					$row['fields'] = array_merge($row['fields'], $diffs['fields']['less']);
+				}
+				if (!empty($diffs['fields']['diff'])) {
+					$row['fields'] = array_merge($row['fields'], $diffs['fields']['diff']);
+				}
+				if (!empty($diffs['indexes']['less'])) {
+					$row['indexes'] = array_merge($row['indexes'], $diffs['indexes']['less']);
+				}
+				if (!empty($diffs['indexes']['diff'])) {
+					$row['indexes'] = array_merge($row['indexes'], $diffs['indexes']['diff']);
+				}
+				$row['fields'] = implode($row['fields'], ' ');
+				$row['indexes'] = implode($row['indexes'], ' ');
+			}
+			$upgrade['database'][] = $row;
+		}
 	}
 	$path = IA_ROOT . '/data/patch/' . date('Ymd') . '/';
 	if (is_dir($path)) {

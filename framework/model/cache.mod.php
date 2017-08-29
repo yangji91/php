@@ -2,7 +2,7 @@
 
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 function cache_build_template() {
 	load()->func('file');
@@ -228,12 +228,11 @@ function cache_build_module_subscribe_type() {
 			}
 		}
 	}
-
 	$module_ban = $_W['setting']['module_receive_ban'];
 	foreach ($subscribe as $event => $module_group) {
 		if (!empty($module_group)) {
 			foreach ($module_group as $index => $module) {
-				if (!empty($module_ban[$module])) {
+				if (empty($module_ban[$module])) {
 					unset($subscribe[$event][$index]);
 				}
 			}
@@ -279,8 +278,8 @@ function cache_build_uninstalled_module() {
 	if (!empty($cloud_module) && !is_error($cloud_module)) {
 		foreach ($cloud_module as $module) {
 			$upgrade_support_module = false;
-			$wxapp_support = !empty($module['site_branch']['wxapp_support']) && is_array($module['site_branch']['bought']) && in_array('wxapp', $module['site_branch']['bought']) ? $module['site_branch']['wxapp_support'] : 1;
-			$app_support = !empty($module['site_branch']['app_support']) && is_array($module['site_branch']['bought']) && in_array('app', $module['site_branch']['bought']) ? $module['site_branch']['app_support'] : 1;
+			$wxapp_support = !empty($module['site_branch']['wxapp_support']) && in_array('wxapp', $module['site_branch']['bought']) ? $module['site_branch']['wxapp_support'] : 1;
+			$app_support = !empty($module['site_branch']['app_support']) && in_array('app', $module['site_branch']['bought']) ? $module['site_branch']['app_support'] : 1;
 			if ($wxapp_support ==  1 && $app_support == 1) {
 				$app_support = 2;
 			}

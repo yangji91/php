@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -12,7 +12,6 @@ load()->func('db');
 load()->model('extension');
 load()->model('module');
 load()->model('system');
-load()->model('user');
 
 $dos = array('platform', 'system', 'ext', 'get_fans_kpi', 'get_last_modules', 'get_system_upgrade', 'get_upgrade_modules', 'get_module_statistics');
 $do = in_array($do, $dos) ? $do : 'platform';
@@ -39,7 +38,7 @@ if ($do == 'platform') {
 } elseif ($do == 'system') {
 	define('FRAME', 'system');
 	$_W['page']['title'] = '欢迎页 - 系统管理';
-	if(!$_W['isfounder'] || user_is_vice_founder()){
+	if(!$_W['isfounder']){
 		header('Location: ' . url('account/manage', array('account_type' => 1)), true);
 		exit;
 	}

@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -22,7 +22,7 @@ function utility_image_rename($image_source_url, $image_destination_url) {
 		return false;
 	}
 	if (!strexists($image_source_url, $_W['siteroot'])) {
-		$img_local_path = file_remote_attach_fetch($image_source_url);
+		$img_local_path = file_fetch($image_source_url);
 		if (is_error($img_local_path)) {
 			return false;
 		}

@@ -1,14 +1,14 @@
 <?php
 /**
- * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * [We7 System] Copyright (c) 2017 
+ * 
  */
-error_reporting(E_ALL ^ E_NOTICE);
+define('IN_IA', true);
+error_reporting(0);
 @set_time_limit(0);
-
 ob_start();
 define('IA_ROOT', str_replace("\\",'/', dirname(__FILE__)));
-define('APP_URL', 'http://v2.addons.we7.cc/web/');
+define('APP_URL', 'https://lanmengkeji.taobao.com/category-1324162171.htm?spm=a1z10.3-c.w4010-5166136497.8.6CkUrG&search=y&catName=%CE%A2%C7%E6%D3%A6%D3%C3#bd');
 define('APP_STORE_URL', 'http://v2.addons.we7.cc/web');
 define('APP_STORE_API', 'http://v2.addons.we7.cc/api.php');
 if($_GET['res']) {
@@ -24,7 +24,6 @@ if($_GET['res']) {
 		exit();
 	}
 }
-
 $actions = array('license', 'env', 'db', 'finish');
 $action = $_COOKIE['action'];
 $action = in_array($action, $actions) ? $action : 'license';
@@ -74,35 +73,30 @@ if($action == 'env') {
 	if(version_compare(PHP_VERSION, '5.3.0') == -1) {
 		$ret['php']['version']['class'] = 'danger';
 		$ret['php']['version']['failed'] = true;
-		$ret['php']['version']['remark'] = 'PHP版本必须为 5.3.0 以上. <a href="http://bbs.we7.cc/forum.php?mod=redirect&goto=findpost&ptid=3564&pid=58062">详情</a>';
+		$ret['php']['version']['remark'] = 'PHP版本必须为 5.3.0 以上，强烈建议您使用 7.0';
 	}
 
 	$ret['php']['pdo']['ok'] = extension_loaded('pdo') && extension_loaded('pdo_mysql');
 	if($ret['php']['pdo']['ok']) {
 		$ret['php']['pdo']['value'] = '<span class="glyphicon glyphicon-ok text-success"></span>';
 		$ret['php']['pdo']['class'] = 'success';
+		$ret['php']['pdo']['remark'] = '';
 	} else {
 		$ret['php']['pdo']['failed'] = true;
-		$ret['php']['pdo']['value'] = '<span class="glyphicon glyphicon-remove text-warning"></span>';
-		$ret['php']['pdo']['class'] = 'warning';
-		$ret['php']['pdo']['remark'] = '您的PHP环境不支持PDO, 请开启此扩展. <a target="_blank" href="http://bbs.we7.cc/forum.php?mod=redirect&goto=findpost&ptid=3564&pid=58074">详情</a>';
-	}
-
-	$ret['php']['fopen']['ok'] = @ini_get('allow_url_fopen') && function_exists('fsockopen');
-	if($ret['php']['fopen']['ok']) {
-		$ret['php']['fopen']['value'] = '<span class="glyphicon glyphicon-ok text-success"></span>';
-	} else {
-		$ret['php']['fopen']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
+		$ret['php']['pdo']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
+		$ret['php']['pdo']['class'] = 'danger';
+		$ret['php']['pdo']['remark'] = '您的PHP环境不支持PDO, 系统无法正常运行';
 	}
 
 	$ret['php']['curl']['ok'] = extension_loaded('curl') && function_exists('curl_init');
 	if($ret['php']['curl']['ok']) {
 		$ret['php']['curl']['value'] = '<span class="glyphicon glyphicon-ok text-success"></span>';
 		$ret['php']['curl']['class'] = 'success';
+		$ret['php']['curl']['remark'] = '';
 	} else {
 		$ret['php']['curl']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
 		$ret['php']['curl']['class'] = 'danger';
-		$ret['php']['curl']['remark'] = '您的PHP环境不支持cURL, 也不支持 allow_url_fopen, 系统无法正常运行. <a target="_blank" href="http://bbs.we7.cc/forum.php?mod=redirect&goto=findpost&ptid=3564&pid=58086">详情</a>';
+			$ret['php']['curl']['remark'] = '您的PHP环境不支持cURL, 也不支持 allow_url_fopen, 系统无法正常运行';
 		$ret['php']['curl']['failed'] = true;
 	}
 
@@ -114,7 +108,7 @@ if($action == 'env') {
 		$ret['php']['ssl']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
 		$ret['php']['ssl']['class'] = 'danger';
 		$ret['php']['ssl']['failed'] = true;
-		$ret['php']['ssl']['remark'] = '没有启用OpenSSL, 将无法访问公众平台的接口, 系统无法正常运行. <a target="_blank" href="http://bbs.we7.cc/forum.php?mod=redirect&goto=findpost&ptid=3564&pid=58109">详情</a>';
+		$ret['php']['ssl']['remark'] = '没有启用OpenSSL, 将无法访问公众平台的接口, 系统无法正常运行';
 	}
 
 	$ret['php']['gd']['ok'] = extension_loaded('gd');
@@ -125,7 +119,7 @@ if($action == 'env') {
 		$ret['php']['gd']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
 		$ret['php']['gd']['class'] = 'danger';
 		$ret['php']['gd']['failed'] = true;
-		$ret['php']['gd']['remark'] = '没有启用GD, 将无法正常上传和压缩图片, 系统无法正常运行. <a target="_blank" href="http://bbs.we7.cc/forum.php?mod=redirect&goto=findpost&ptid=3564&pid=58110">详情</a>';
+		$ret['php']['gd']['remark'] = '没有启用GD, 将无法正常上传和压缩图片, 系统无法正常运行';
 	}
 
 	$ret['php']['dom']['ok'] = class_exists('DOMDocument');
@@ -136,7 +130,7 @@ if($action == 'env') {
 		$ret['php']['dom']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
 		$ret['php']['dom']['class'] = 'danger';
 		$ret['php']['dom']['failed'] = true;
-		$ret['php']['dom']['remark'] = '没有启用DOMDocument, 将无法正常安装使用模块, 系统无法正常运行. <a target="_blank" href="http://bbs.we7.cc/forum.php?mod=redirect&goto=findpost&ptid=3564&pid=58111">详情</a>';
+		$ret['php']['dom']['remark'] = '没有启用DOMDocument, 将无法正常安装使用模块, 系统无法正常运行';
 	}
 
 	$ret['php']['session']['ok'] = ini_get('session.auto_start');
@@ -147,7 +141,7 @@ if($action == 'env') {
 		$ret['php']['session']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
 		$ret['php']['session']['class'] = 'danger';
 		$ret['php']['session']['failed'] = true;
-		$ret['php']['session']['remark'] = '系统session.auto_start开启, 将无法正常注册会员, 系统无法正常运行. <a target="_blank" href="http://bbs.we7.cc/forum.php?mod=redirect&goto=findpost&ptid=3564&pid=58111">详情</a>';
+		$ret['php']['session']['remark'] = '系统session.auto_start开启, 将无法正常注册会员, 系统无法正常运行';
 	}
 
 	$ret['php']['asp_tags']['ok'] = ini_get('asp_tags');
@@ -169,7 +163,7 @@ if($action == 'env') {
 		$ret['write']['root']['value'] = '<span class="glyphicon glyphicon-remove text-danger"></span>';
 		$ret['write']['root']['class'] = 'danger';
 		$ret['write']['root']['failed'] = true;
-		$ret['write']['root']['remark'] = '本地目录无法写入, 将无法使用自动更新功能, 系统无法正常运行.  <a href="http://bbs.we7.cc/">详情</a>';
+		$ret['write']['root']['remark'] = '本地目录无法写入, 将无法使用自动更新功能, 系统无法正常运行';
 	}
 	$ret['write']['data']['ok'] = local_writeable(IA_ROOT . '/data');
 	if($ret['write']['data']['ok']) {
@@ -204,48 +198,50 @@ if($action == 'db') {
 		$family = $_POST['family'] == 'x' ? 'x' : 'v';
 		$db = $_POST['db'];
 		$user = $_POST['user'];
+		list($host, $port) = explode(':', $db['server']);
+		if (empty($port)) {
+			$port = '3306';
+		}
 		try {
-			$pieces = explode(':', $db['server']);
-			$db['server'] = $pieces[0];
-			$db['port'] = !empty($pieces[1]) ? $pieces[1] : '3306';
-			$link = new PDO("mysql:host={$db['server']};port={$db['port']}", $db['username'], $db['password']); 	// dns可以没有dbname
-			$link->exec("SET character_set_connection=utf8, character_set_results=utf8, character_set_client=binary");
-			$link->exec("SET sql_mode=''");
-			if ($link->errorCode() != '00000') {
-				$errorInfo = $link->errorInfo();
-				$error = $errorInfo[2];
+			$link = new PDO("mysql:host={$host};port={$port}", $db['username'], $db['password']);
+		} catch (Exception $error) {
+			$error = $error->getMessage();
+			if (strpos($error, 'Access denied for user') !== false) {
+				$error = '您的数据库访问用户名或是密码错误. <br />';
 			} else {
-				$statement = $link->query("SHOW DATABASES LIKE '{$db['name']}';");
-				$fetch = $statement->fetch();
-				if (empty($fetch)){
-					if (substr($link->getAttribute(PDO::ATTR_SERVER_VERSION), 0, 3) > '4.1') {
+				$error = iconv('gbk', 'utf-8', $error);
+			}
+		}
+		if(!empty($link)) {
+			$link->query("SET character_set_connection=utf8, character_set_results=utf8, character_set_client=binary");
+			$link->query("SET sql_mode=''");
+
+			if($link->errorCode() != '00000') {
+				$error = $link->errorInfo();
+				$error = $error[2];
+			} else {
+				$db_found = $link->query("SHOW DATABASES LIKE '{$db['name']}';")->fetchColumn();
+				if (empty($db_found)) {
+					if(version_compare($link->query('select version()')->fetchColumn(), '4.1') == '1') {
 						$link->query("CREATE DATABASE IF NOT EXISTS `{$db['name']}` DEFAULT CHARACTER SET utf8");
 					} else {
 						$link->query("CREATE DATABASE IF NOT EXISTS `{$db['name']}`");
 					}
 				}
-				$statement = $link->query("SHOW DATABASES LIKE '{$db['name']}';");
-				$fetch = $statement->fetch();
-				if (empty($fetch)) {
+				$db_found = $link->query("SHOW DATABASES LIKE '{$db['name']}';")->fetchColumn();
+				if (empty($db_found)) {
 					$error .= "数据库不存在且创建数据库失败. <br />";
 				}
-				if ($link->errorCode() != '00000') {
-					$errorInfo = $link->errorInfo();
-					$error .= $errorInfo[2];
+				if($link->errorCode() != '00000') {
+					$errorinfo = $link->errorInfo();
+					$error .= $errorinfo[2];
 				}
-			}
-		} catch (PDOException $e) {
-			$error = $e->getMessage();
-			if (strpos($error, 'Access denied for user') !== false) {
-				$error = '您的数据库访问用户名或是密码错误. <br />';
-			} else {
-				$error = iconv('gbk', 'utf8', $error);
 			}
 		}
 		if(empty($error)) {
-			$link->exec("USE {$db['name']}");
-			$statement = $link->query("SHOW TABLES LIKE '{$db['prefix']}%';");
-			if ($statement->fetch()) {
+			$link->query("USE `{$db['name']}`");
+			$table_found = $link->query("SHOW TABLES LIKE '{$db['prefix']}%';")->fetchColumn();
+			if (!empty($table_found)) {
 				$error = '您的数据库不为空，请重新建立数据库或是清空该数据库或更改表前缀！';
 			}
 		}
@@ -256,40 +252,81 @@ if($action == 'db') {
 			$config = str_replace(array(
 				'{db-server}', '{db-username}', '{db-password}', '{db-port}', '{db-name}', '{db-tablepre}', '{cookiepre}', '{authkey}', '{attachdir}'
 			), array(
-				$db['server'], $db['username'], $db['password'], $db['port'], $db['name'], $db['prefix'], $cookiepre, $authkey, 'attachment'
+				$host, $db['username'], $db['password'], $port, $db['name'], $db['prefix'], $cookiepre, $authkey, 'attachment'
 			), $config);
 			$verfile = IA_ROOT . '/framework/version.inc.php';
 			$dbfile = IA_ROOT . '/data/db.php';
 
-			if($_POST['type'] == 'remote') {
-				$link = NULL;
+/* 			if($_POST['type'] == 'remote') {
+				$link = null;
 				$ins = remote_install();
-				if(empty($ins)) {
+				if(empty($ins) || !is_array($ins)) {
 					die('<script type="text/javascript">alert("连接不到服务器, 请稍后重试！");history.back();</script>');
 				}
-				if($ins == 'error') {
-					die('<script type="text/javascript">alert("版本错误，请确认是否为微擎最新版安装文件！");history.back();</script>');
+				if($ins['error']) {
+					die('<script type="text/javascript">alert("链接微擎更新服务器失败, 错误为: ' . $ins['error'] . '！");history.back();</script>');
 				}
+				$archive = $ins['files'];
+				if(!$archive) {
+					die('<script type="text/javascript">alert("未能下载程序包, 请确认你的安装程序目录有写入权限. 多次安装失败, 请访问论坛获取解决方案！");history.back();</script>');
+				}
+				$link = new PDO("mysql:dbname={$db['name']};host={$host};port={$port}", $db['username'], $db['password']);
+				$link->query("SET character_set_connection=utf8, character_set_results=utf8, character_set_client=binary");
+				$link->query("SET sql_mode=''");
 
-				$link = new PDO("mysql:dbname={$db['name']};host={$db['server']};port={$db['port']}", $db['username'], $db['password']);
-				$link->exec("SET character_set_connection=utf8, character_set_results=utf8, character_set_client=binary");
-				$link->exec("SET sql_mode=''");
+				$version = $ins['version'];
+				$release = $ins['release'];
+				$family = $ins['family'];
+								$tmpfile = IA_ROOT . '/we7source.tmp';
+				file_put_contents($tmpfile, $archive);
+				local_mkdirs(IA_ROOT . '/data');
+				file_put_contents(IA_ROOT . '/data/db.php', base64_decode($ins['schemas']));
 
-				$tmpfile = IA_ROOT . '/we7source.tmp';
-				file_put_contents($tmpfile, $ins);
-
-				$zip = new ZipArchive;
-				$res = $zip->open($tmpfile);
-
-				if ($res === TRUE) {
-					$zip->extractTo(IA_ROOT);
-					$zip->close();
-				} else {
-					die('<script type="text/javascript">alert("安装失败，请确认当前目录是否有写入权限！");history.back();</script>');
+				$fp = fopen($tmpfile, 'r');
+				if ($fp) {
+					$buffer = '';
+					while (!feof($fp)) {
+						$buffer .= fgets($fp, 4096);
+						if($buffer[strlen($buffer) - 1] == "\n") {
+							$pieces = explode(':', $buffer);
+							$path = base64_decode($pieces[0]);
+							$dat = base64_decode($pieces[1]);
+							$fname = IA_ROOT . $path;
+							local_mkdirs(dirname($fname));
+							file_put_contents($fname, $dat);
+							$buffer = '';
+						}
+					}
+					fclose($fp);
 				}
 				unlink($tmpfile);
-			}
+			} else { */
+				if (file_exists($verfile)) {
+					include $verfile;
+					$version = IMS_VERSION;
+					$release = IMS_RELEASE_DATE;
+				} else {
+					$version = '';
+					$release = date('YmdHis');
+				}
+			//}
+$verdat = <<<VER
+<?php
+/**
+ * 版本号
+ *
+ * [we7 System] Copyright (c) 2018 we7.cc
+ */
 
+defined('IN_IA') or exit('Access Denied');
+define('IMS_FAMILY', 'x');
+define('IMS_VERSION', '{$version}');
+define('IMS_RELEASE_DATE', '{$release}');
+VER;
+			$is_ok = file_put_contents($verfile, $verdat);
+			if(!$is_ok) {
+				die('<script type="text/javascript">alert("生成版本文件失败");history.back();</script>');
+			}
 			if(file_exists(IA_ROOT . '/index.php') && is_dir(IA_ROOT . '/web') && file_exists($verfile) && file_exists($dbfile)) {
 				$dat = require $dbfile;
 				if(empty($dat) || !is_array($dat)) {
@@ -303,12 +340,12 @@ if($action == 'db') {
 					local_run($data);
 				}
 			} else {
-				die('<script type="text/javascript">alert("你正在使用本地安装, 但未下载完整安装包, 请从微擎官网下载完整安装包后重试.");history.back();</script>');
+				die('<script type="text/javascript">alert("你正在使用本地安装, 但未下载完整安装包, 请从微擎社区官网下载完整安装包后重试.");history.back();</script>');
 			}
 
 			$salt = local_salt(8);
 			$password = sha1("{$user['password']}-{$salt}-{$authkey}");
-			$link->exec("INSERT INTO {$db['prefix']}users (username, password, salt, joindate, groupid) VALUES('{$user['username']}', '{$password}', '{$salt}', '" . time() . "', 1)");
+			$link->query("INSERT INTO {$db['prefix']}users (username, password, salt, joindate) VALUES('{$user['username']}', '{$password}', '{$salt}', '" . time() . "')");
 			local_mkdirs(IA_ROOT . '/data');
 			file_put_contents(IA_ROOT . '/data/config.php', $config);
 			touch(IA_ROOT . '/data/install.lock');
@@ -323,7 +360,7 @@ if($action == 'db') {
 if($action == 'finish') {
 	setcookie('action', '', -10);
 	$dbfile = IA_ROOT . '/data/db.php';
-	@unlink($dbfile);
+	//@unlink($dbfile);
 	define('IN_SYS', true);
 	require IA_ROOT . '/framework/bootstrap.inc.php';
 	require IA_ROOT . '/web/common/bootstrap.sys.inc.php';
@@ -409,6 +446,7 @@ defined('IN_IA') or exit('Access Denied');
 \$config['setting']['founder'] = '1';
 \$config['setting']['development'] = 0;
 \$config['setting']['referrer'] = 0;
+\$config['setting']['https'] = 0;
 
 // --------------------------  CONFIG UPLOAD  --------------------------- //
 \$config['upload']['image']['extentions'] = array('gif', 'jpg', 'jpeg', 'png');
@@ -460,10 +498,9 @@ function local_run($sql) {
 	foreach($ret as $query) {
 		$query = trim($query);
 		if($query) {
-			$link->exec($query);
-			if($link->errorCode() != '00000') {
-				$errorInfo = $link->errorInfo();
-				echo $errorInfo[0] . ": " . $errorInfo[2] . "<br />";
+			if(!$link->query($query)) {
+				$errorinfo = $link->errorInfo();
+				echo $errorinfo[2] . ": " . $link->errorCode() . "<br />";
 				exit($query);
 			}
 		}
@@ -520,34 +557,103 @@ function local_create_sql($schema) {
 	return $sql;
 }
 
-function remote_install() {
+/* function __remote_install_headers($ch = '', $header = '') {
+	static $hash;
+	if(!empty($header)) {
+		$pieces = explode(':', $header);
+		if(trim($pieces[0]) == 'hash') {
+			$hash = trim($pieces[1]);
+		}
+	}
+	if($ch == '' && $header == '') {
+		return $hash;
+	}
+	return strlen($header);
+} */
+
+/* function remote_install() {
 	global $family;
 	$token = '';
 	$pars = array();
 	$pars['host'] = $_SERVER['HTTP_HOST'];
 	$pars['version'] = '1.0';
+	$pars['release'] = '';
 	$pars['type'] = 'install';
-	$pars['method'] = 'application.install';
-	$url = 'http://v2.addons.we7.cc/gateway.php';
+	$pars['product'] = '';
+	$url = 'http://www.we7.cc/gateway.php';
 	$urlset = parse_url($url);
 	$cloudip = gethostbyname($urlset['host']);
 	$headers[] = "Host: {$urlset['host']}";
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $urlset['scheme'] . '://' . $cloudip . $urlset['path']);
 	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($pars, '', '&'));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $pars);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_HEADERFUNCTION, '__remote_install_headers');
 	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 	$content = curl_exec($ch);
 	curl_close($ch);
-
-	if (empty($content)) {
+	$sign = __remote_install_headers();
+	$ret = array();
+	if(empty($content)) {
 		return showerror(-1, '获取安装信息失败，可能是由于网络不稳定，请重试。');
 	}
+	$ret = unserialize($content);
+	if($sign != md5($ret['data'] . $token)) {
+		return showerror(-1, '发生错误: 数据校验失败，可能是传输过程中网络不稳定导致，请重试。');
+	}
+	$ret['data'] = unserialize($ret['data']);
+	return $ret['data'];
+} */
 
-	return $content;
+/* function __remote_download_headers($ch = '', $header = '') {
+	static $hash;
+	if(!empty($header)) {
+		$pieces = explode(':', $header);
+		if(trim($pieces[0]) == 'hash') {
+			$hash = trim($pieces[1]);
+		}
+	}
+	if($ch == '' && $header == '') {
+		return $hash;
+	}
+	return strlen($header);
+} */
+
+/* function remote_download($archive) {
+	$pars = array();
+	$pars['host'] = $_SERVER['HTTP_HOST'];
+	$pars['version'] = '';
+	$pars['release'] = '';
+	$pars['archive'] = base64_encode(json_encode($archive));
+	$url = 'http://www.we7.cc/gateway.php';
+	$urlset = parse_url($url);
+	$cloudip = gethostbyname($urlset['host']);
+	$headers[] = "Host: {$urlset['host']}";
+	$tmpfile = IA_ROOT . '/we7.zip';
+	$fp = fopen($tmpfile, 'w+');
+	if(!$fp) {
+		return false;
+	}
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $urlset['scheme'] . '://' . $cloudip . $urlset['path']);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $pars);
+	curl_setopt($ch, CURLOPT_FILE, $fp);
+	curl_setopt($ch, CURLOPT_HEADERFUNCTION, '__remote_download_headers');
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	if(!curl_exec($ch)) {
+		return false;
+	}
+	curl_close($ch);
+	fclose($fp);
+	$sign = __remote_download_headers();
+	if(md5_file($tmpfile) == $sign) {
+		return $tmpfile;
+	}
+	return false;
 }
-
+ */
 function tpl_frame() {
 	global $action, $actions;
 	$action = $_COOKIE['action'];
@@ -570,7 +676,7 @@ function tpl_frame() {
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>安装系统 - 微擎 - 公众平台自助开源引擎</title>
+		<title>安装系统 - 公众平台自助开源引擎</title>
 		<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css">
 		<style>
 			html,body{font-size:13px;font-family:"Microsoft YaHei UI", "微软雅黑", "宋体";}
@@ -589,9 +695,9 @@ function tpl_frame() {
 		<div class="container">
 			<div class="header" style="margin:15px auto;">
 				<ul class="nav nav-pills pull-right" role="tablist">
-					<li role="presentation" class="active"><a href="javascript:;">安装微擎系统</a></li>
-					<li role="presentation"><a href="http://www.we7.cc">微擎官网</a></li>
-					<li role="presentation"><a href="http://bbs.we7.cc">访问论坛</a></li>
+					<li role="presentation" class="active"><a style="background-color:#E81010;" href="javascript:;">安装微擎系统</a></li>
+					<!--<li role="presentation"><a href="http://www.we7.cc">微擎官网</a></li>-->
+					<li role="presentation"><a href="http://www.we7.cc">访问微擎社区</a></li>
 				</ul>
 				<img src="?res=logo" />
 			</div>
@@ -620,10 +726,10 @@ function tpl_frame() {
 			</div>
 			<div class="footer" style="margin:15px auto;">
 				<div class="text-center">
-					<a href="http://www.we7.cc">关于微擎</a> &nbsp; &nbsp; <a href="http://bbs.we7.cc">微擎帮助</a> &nbsp; &nbsp; <a href="http://www.we7.cc">购买授权</a>
+					<a href="http://www.we7.cc">微擎社区</a> &nbsp; &nbsp; <a href="http://www.we7.cc/forum-63-1.html">帮助文档</a> &nbsp; &nbsp; <a href="http://www.we7.cc/forum.php">访问社区</a>
 				</div>
 				<div class="text-center">
-					Powered by <a href="http://www.we7.cc"><b>微擎</b></a> v0.8 &copy; 2014 <a href="http://www.we7.cc">www.we7.cc</a>
+					Powered by <a href="http://www.we7.cc"><b>微擎社区</b></a> v1.0 &copy; 2017 <a href="http://www.we7.cc">www.we7.cc</a>
 				</div>
 			</div>
 		</div>
@@ -640,29 +746,26 @@ function tpl_install_license() {
 		<div class="panel panel-default">
 			<div class="panel-heading">阅读许可协议</div>
 			<div class="panel-body" style="overflow-y:scroll;max-height:400px;line-height:20px;">
-				<h3>版权所有 (c)2014，微擎团队保留所有权利。 </h3>
+				<h3>版权所有 (c)2014-2018，微信CMS团队保留部分权利。 </h3>
 				<p>
-					感谢您选择微擎 - 微信公众平台自助开源引擎（以下简称WE7，WE7基于 PHP + MySQL的技术开发，全部源码开放。 <br />
+					感谢您选择微信CMS - 微信公众平台插件开源免费框架（以下简称微擎，微擎基于 PHP + MySQL的技术开发） <br />
 					为了使你正确并合法的使用本软件，请你在使用前务必阅读清楚下面的协议条款：
 				</p>
 				<p>
-					<strong>一、本授权协议适用且仅适用于微擎系统(We7, MicroEngine. 以下简称微擎)任何版本，微擎官方对本授权协议的最终解释权。</strong>
+					<strong>一、本授权协议适用且仅适用于微信CMS系统(微擎. 以下简称微信CMS)任何版本，微信CMS官方对本授权协议的最终解释权。</strong>
 				</p>
 				<p>
 					<strong>二、协议许可的权利 </strong>
 					<ol>
-						<li>您可以在完全遵守本最终用户授权协议的基础上，将本软件应用于非商业用途，而不必支付软件版权授权费用。</li>
-						<li>您可以在协议规定的约束和限制范围内修改微擎源代码或界面风格以适应您的网站要求。</li>
+						<li>您可以在协议规定的约束和限制范围内修改微信CMS源代码或界面风格以适应您的网站要求。</li>
 						<li>您拥有使用本软件构建的网站全部内容所有权，并独立承担与这些内容的相关法律义务。</li>
-						<li>获得商业授权之后，您可以将本软件应用于商业用途，同时依据所购买的授权类型中确定的技术支持内容，自购买时刻起，在技术支持期限内拥有通过指定的方式获得指定范围内的技术支持服务。商业授权用户享有反映和提出意见的权力，相关意见将被作为首要考虑，但没有一定被采纳的承诺或保证。</li>
 					</ol>
 				</p>
 				<p>
 					<strong>三、协议规定的约束和限制 </strong>
 					<ol>
-						<li>未获商业授权之前，不得将本软件用于商业用途（包括但不限于企业网站、经营性网站、以营利为目的或实现盈利的网站）。</li>
-						<li>未经官方许可，不得对本软件或与之关联的商业授权进行出租、出售、抵押或发放子许可证。</li>
-						<li>未经官方许可，禁止在微擎的整体或任何部分基础上以发展任何派生版本、修改版本或第三方版本用于重新分发。</li>
+						<li>未经官方许可，不得对本软件或与之关联的代码进行出租、出售、抵押或发放子许可证。</li>
+						<li>未经官方许可，禁止在微信的整体或任何部分基础上以发展任何派生版本、修改版本或第三方版本用于重新分发。</li>
 						<li>如果您未能遵守本协议的条款，您的授权将被终止，所被许可的权利将被收回，并承担相应法律责任。</li>
 					</ol>
 				</p>
@@ -671,8 +774,8 @@ function tpl_install_license() {
 					<ol>
 						<li>本软件及所附带的文件是作为不提供任何明确的或隐含的赔偿或担保的形式提供的。</li>
 						<li>用户出于自愿而使用本软件，您必须了解使用本软件的风险，在尚未购买产品技术服务之前，我们不承诺对免费用户提供任何形式的技术支持、使用担保，也不承担任何因使用本软件而产生问题的相关责任。</li>
-						<li>电子文本形式的授权协议如同双方书面签署的协议一样，具有完全的和等同的法律效力。您一旦开始确认本协议并安装  WE7，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的权力的同时，受到相关的约束和限制。协议许可范围以外的行为，将直接违反本授权协议并构成侵权，我们有权随时终止授权，责令停止损害，并保留追究相关责任的权力。</li>
-						<li>如果本软件带有其它软件的整合API示范例子包，这些文件版权不属于本软件官方，并且这些文件是没经过授权发布的，请参考相关软件的使用许可合法的使用。</li>
+						<li>电子文本形式的授权协议如同双方书面签署的协议一样，具有完全的和等同的法律效力。您一旦开始确认本协议并安装  微擎，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的权力的同时，受到相关的约束和限制。协议许可范围以外的行为，将直接违反本授权协议并构成侵权，我们有权随时终止授权，责令停止损害，并保留追究相关责任的权力。</li>
+						<li>本软件源自网上第三方免费源码-微擎，并且这些文件是没经过授权发布的，请参考微擎软件的使用许可合法的使用。</li>
 					</ol>
 				</p>
 			</div>
@@ -686,7 +789,7 @@ function tpl_install_license() {
 						</label>
 					</div>
 				</li>
-				<li class="previous"><a href="javascript:;" onclick="if(jQuery(':checkbox:checked').length == 1){jQuery('form')[0].submit();}else{alert('您必须同意软件许可协议才能安装！')};">继续 <span class="glyphicon glyphicon-chevron-right"></span></a></li>
+				<li class="previous"><a href="javascript:;" onClick="if(jQuery(':checkbox:checked').length == 1){jQuery('form')[0].submit();}else{alert('您必须同意软件许可协议才能安装！')};">继续 <span class="glyphicon glyphicon-chevron-right"></span></a></li>
 			</ul>
 		</form>
 EOF;
@@ -697,7 +800,7 @@ function tpl_install_env($ret = array()) {
 	if(empty($ret['continue'])) {
 		$continue = '<li class="previous disabled"><a href="javascript:;">请先解决环境问题后继续</a></li>';
 	} else {
-		$continue = '<li class="previous"><a href="javascript:;" onclick="$(\'#do\').val(\'continue\');$(\'form\')[0].submit();">继续 <span class="glyphicon glyphicon-chevron-right"></span></a></li>';
+		$continue = '<li class="previous"><a href="javascript:;" onClick="$(\'#do\').val(\'continue\');$(\'form\')[0].submit();">继续 <span class="glyphicon glyphicon-chevron-right"></span></a></li>';
 	}
 	echo <<<EOF
 		<div class="panel panel-default">
@@ -757,17 +860,17 @@ function tpl_install_env($ret = array()) {
 					<td>{$ret['php']['version']['value']}</td>
 					<td>{$ret['php']['version']['remark']}</td>
 				</tr>
+				<tr class="{$ret['php']['pdo']['class']}">
+					<td>PDO_MYSQL</td>
+					<td>支持</td>
+					<td>{$ret['php']['pdo']['value']}</td>
+					<td>{$ret['php']['pdo']['remark']}</td>
+				</tr>
 				<tr class="{$ret['php']['curl']['class']}">
 					<td>cURL</td>
 					<td>支持</td>
 					<td>{$ret['php']['curl']['value']}</td>
 					<td>{$ret['php']['curl']['remark']}</td>
-				</tr>
-				<tr class="{$ret['php']['pdo']['class']}">
-					<td>PDO</td>
-					<td>支持</td>
-					<td>{$ret['php']['pdo']['value']}</td>
-					<td>{$ret['php']['pdo']['remark']}</td>
 				</tr>
 				<tr class="{$ret['php']['ssl']['class']}">
 					<td>openSSL</td>
@@ -829,7 +932,7 @@ function tpl_install_env($ret = array()) {
 		<form class="form-inline" role="form" method="post">
 			<input type="hidden" name="do" id="do" />
 			<ul class="pager">
-				<li class="previous"><a href="javascript:;" onclick="$('#do').val('back');$('form')[0].submit();"><span class="glyphicon glyphicon-chevron-left"></span> 返回</a></li>
+				<li class="previous"><a href="javascript:;" onClick="$('#do').val('back');$('form')[0].submit();"><span class="glyphicon glyphicon-chevron-left"></span> 返回</a></li>
 				{$continue}
 			</ul>
 		</form>
@@ -861,14 +964,15 @@ function tpl_install_db($error = '') {
 				<div class="form-group">
 					<label class="col-sm-2 control-label">安装方式</label>
 					<div class="col-sm-10">
-						<label class="radio-inline">
+						<!--<label class="radio-inline">
 							<input type="radio" name="type" value="remote"{$insTypes['remote']}> 在线安装
-						</label>
+						</label>-->
 						<label class="radio-inline">
 							<input type="radio" name="type" value="local"{$insTypes['local']}{$disabled}> 离线安装
 						</label>
 						<div class="help-block">
-							<span style="color:red">由于在线安装是精简版，安装后，请务必注册云服务更新到完整版</span> <br/>
+							<!--<span style="color:red">由于在线安装是精简版，安装后，请务必注册云服务更新到完整版</span> <br/>-->
+							<span style="color:red">安装完成后，请务必注册云服务更新到完整版</span> <br/>
 							在线安装能够直接安装最新版本微擎系统, 如果在线安装困难, 请下载离线安装包后使用本地安装. <br/>
 							离线安装包可能不是最新程序, 如果你不确定, 可以现在访问官网重新下载一份最新的.
 						</div>
@@ -936,8 +1040,8 @@ function tpl_install_db($error = '') {
 		</div>
 		<input type="hidden" name="do" id="do" />
 		<ul class="pager">
-			<li class="previous"><a href="javascript:;" onclick="$('#do').val('back');$('form')[0].submit();"><span class="glyphicon glyphicon-chevron-left"></span> 返回</a></li>
-			<li class="previous"><a href="javascript:;" onclick="if(check(this)){jQuery('#do').val('continue');if($('input[name=type]:checked').val() == 'remote'){alert('在线安装时，安装程序会下载精简版快速完成安装，完成后请务必注册云服务更新到完整版。')}$('form')[0].submit();}">继续 <span class="glyphicon glyphicon-chevron-right"></span></a></li>
+			<li class="previous"><a href="javascript:;" onClick="$('#do').val('back');$('form')[0].submit();"><span class="glyphicon glyphicon-chevron-left"></span> 返回</a></li>
+			<li class="previous"><a href="javascript:;" onClick="if(check(this)){jQuery('#do').val('continue');if($('input[name=type]').val() == 'remote'){alert('在线线安装时，安装程序会下载精简版快速完成安装，完成后请务必注册云服务更新到完整版。')}$('form')[0].submit();}">继续 <span class="glyphicon glyphicon-chevron-right"></span></a></li>
 		</ul>
 	</form>
 	<script>
@@ -975,20 +1079,22 @@ EOF;
 }
 
 function tpl_install_finish() {
-	$modules = get_store_module();
-	$themes = get_store_theme();
+	//$modules = get_store_module();
+	//$themes = get_store_theme();
+	$url = APP_STORE_API;
+	$url2 = APP_STORE_URL;
 	echo <<<EOF
 	<div class="page-header"><h3>安装完成</h3></div>
 	<div class="alert alert-success">
-		恭喜您!已成功安装“微擎 - 公众平台自助开源引擎”系统，您现在可以: <a target="_blank" class="btn btn-success" href="./web/index.php">访问网站首页</a>
+		恭喜您!已成功安装“微擎 - 活动运维”系统，您现在可以: <a target="_blank" class="btn btn-success" href="./web/index.php">访问网站首页</a>
 	</div>
 	<div class="form-group">
-		<h5><strong>微擎应用商城</strong></h5>
+		<h5><strong>微擎社区应用商城</strong></h5>
 		<span class="help-block">应用商城特意为您推荐了一批优秀模块、主题，赶紧来安装几个吧！</span>
 		<table class="table table-bordered">
 			<tbody>
-				{$modules}
-				{$themes}
+				<script type="text/javascript" src="{$url}"></script>
+				</iframe>
 			</tbody>
 		</table>
 	</div>
@@ -996,7 +1102,7 @@ function tpl_install_finish() {
 	<div class="alert alert-warning">
 		我们强烈建议您立即注册云服务，享受“在线更新”等云服务。
 		<a target="_blank" class="btn btn-success" href="./web/index.php?c=cloud&a=profile">马上去注册</a>
-		<a target="_blank" class="btn btn-success" href="http://v2.addons.we7.cc" target="_blank">访问应用商城首页</a>
+		<a target="_blank" class="btn btn-success" href="{$url2}" target="_blank">访问应用商城首页</a>
 	</div>
 EOF;
 	tpl_frame();
@@ -1016,7 +1122,7 @@ function showerror($errno, $message = '') {
 	);
 }
 
-function get_store_module() {
+/* function get_store_module() {
 	load()->func('communication');
 	$response = ihttp_request(APP_STORE_API, array('controller' => 'store', 'action' => 'api', 'do' => 'module'));
 	$response = json_decode($response['content'], true);
@@ -1041,9 +1147,9 @@ function get_store_module() {
 	$modules = substr($modules, 5) . '</tr>';
 
 	return $modules;
-}
+} */
 
-function get_store_theme() {
+/* function get_store_theme() {
 	load()->func('communication');
 	$response = ihttp_request(APP_STORE_API, array('controller' => 'store', 'action' => 'api', 'do' => 'theme'));
 	$response = json_decode($response['content'], true);
@@ -1061,4 +1167,4 @@ function get_store_theme() {
 	$themes .= '</div>';
 
 	return $themes;
-}
+} */

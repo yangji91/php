@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 define('IN_GW', true);
@@ -45,9 +45,8 @@ function _login($forward = '') {
 			itoast('您的账号正在审核或是已经被系统禁止，请联系网站管理员解决！', '', '');
 		}
 		$_W['uid'] = $record['uid'];
-		$_W['isfounder'] = user_is_founder($record['uid']);
-		$_W['user'] = $record;
-
+		$founders = explode(',', $_W['config']['setting']['founder']);
+		$_W['isfounder'] = in_array($record['uid'], $founders);
 		if (empty($_W['isfounder'])) {
 			if (!empty($record['endtime']) && $record['endtime'] < TIMESTAMP) {
 				itoast('您的账号有效期限已过，请联系网站管理员解决！', '', '');
@@ -68,7 +67,11 @@ function _login($forward = '') {
 		$status['lastvisit'] = TIMESTAMP;
 		$status['lastip'] = CLIENT_IP;
 		user_update($status);
-
+		if ($record['type'] == ACCOUNT_OPERATE_CLERK) {
+			isetcookie('__uniacid', $record['uniacid'], 7 * 86400);
+			isetcookie('__uid', $record['uid'], 7 * 86400);
+			itoast('登录成功！' ,url('site/entry/clerkdesk', array('uniacid' => $record['uniacid'], 'op' => 'index', 'm' => 'we7_coupon')), 'success');
+		}
 		if (empty($forward)) {
 			$forward = user_login_forward($_GPC['forward']);
 		}

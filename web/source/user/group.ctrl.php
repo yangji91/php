@@ -1,11 +1,9 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
-
-load()->model('user');
 
 $dos = array('display', 'post', 'del');
 $do = !empty($_GPC['do']) ? $_GPC['do'] : 'display';
@@ -18,10 +16,6 @@ if ($do == 'display') {
 	if (!empty($_GPC['name'])) {
 		$condition .= "WHERE name LIKE :name";
 		$params[':name'] = "%{$_GPC['name']}%";
-	}
-	if (user_is_vice_founder()) {
-		$condition .= "WHERE owner_uid = :owner_uid";
-		$params[':owner_uid'] = $_W['uid'];
 	}
 	if (checksubmit('submit')) {
 		if (!empty($_GPC['delete'])) {
@@ -72,30 +66,34 @@ if ($do == 'post') {
 		if (!empty($group_info['package']) && in_array(-1, $group_info['package'])) $group_info['check_all'] = true;
 	}
 	$packages = uni_groups();
-	if (!empty($packages)) {
-		foreach ($packages as $key => &$package_val) {
-			if (!empty($group_info['package']) && in_array($key, $group_info['package'])) {
-				$package_val['checked'] = true;
-			} else {
-				$package_val['checked'] = false;
-			}
+	foreach ($packages as $key => &$package_val) {
+		if (!empty($group_info['package']) && in_array($key, $group_info['package'])) {
+			$package_val['checked'] = true;
+		} else {
+			$package_val['checked'] = false;
 		}
 	}
 	unset($package_val);
 	if (checksubmit('submit')) {
-
-		$user_group = array(
-			'id' => intval($_GPC['id']),
+		if (empty($_GPC['name'])) {
+			itoast('请输入用户组名称！', '', '');
+		}
+		if (!empty($_GPC['package'])) {
+			foreach ($_GPC['package'] as $value) {
+				$package[] = intval($value);
+			}
+		}
+		$data = array(
 			'name' => $_GPC['name'],
-			'package' => $_GPC['package'],
+			'package' => iserializer($package),
 			'maxaccount' => intval($_GPC['maxaccount']),
 			'maxwxapp' => intval($_GPC['maxwxapp']),
 			'timelimit' => intval($_GPC['timelimit'])
 		);
-
-		$user_group_info = user_save_group($user_group);
-		if (is_error($user_group_info)) {
-			itoast($user_group_info['message'], '', '');
+		if (empty($id)) {
+			pdo_insert('users_group', $data);
+		} else {
+			pdo_update('users_group', $data, array('id' => $id));
 		}
 		itoast('用户组更新成功！', url('user/group/display'), 'success');
 	}

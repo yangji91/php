@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -175,7 +175,7 @@ if ($do == 'post') {
 			$account_api = WeAccount::create();
 			$result = $account_api->fansSendAll($group['id'], $msgtype, $mass_record['media_id']);
 			if (is_error($result)) {
-				itoast($result['message'], url('platform/mass'), 'info');
+				itoast($result['message'], url('platform/mass/send'), 'info');
 			}
 			$mass_record['status'] = 0;
 			pdo_insert('mc_mass_record', $mass_record);

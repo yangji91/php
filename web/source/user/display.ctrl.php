@@ -1,19 +1,17 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
-load()->model('user');
-
-$dos = array('display', 'check_display', 'check_pass', 'recycle_display', 'recycle_delete','recycle_restore', 'recycle', 'vice_founder');
+$dos = array('display', 'check_display', 'check_pass', 'recycle_display', 'recycle_delete','recycle_restore', 'recycle');
 $do = in_array($do, $dos) ? $do: 'display';
 
 $_W['page']['title'] = '用户列表 - 用户管理';
 $founders = explode(',', $_W['config']['setting']['founder']);
 
-if (in_array($do, array('display', 'recycle_display', 'check_display', 'vice_founder'))) {
+if (in_array($do, array('display', 'recycle_display', 'check_display'))) {
 	switch ($do) {
 		case 'check_display':
 			uni_user_permission_check('system_user_check');
@@ -23,16 +21,10 @@ if (in_array($do, array('display', 'recycle_display', 'check_display', 'vice_fou
 			uni_user_permission_check('system_user_recycle');
 			$condition = ' WHERE u.status = 3 ';
 			break;
-		case 'vice_founder':
-			$condition = ' WHERE u.founder_groupid = ' . ACCOUNT_MANAGE_GROUP_VICE_FOUNDER;
-			break;
 		default:
 			uni_user_permission_check('system_user');
-			$condition = ' WHERE u.status = 2 AND u.founder_groupid = 0';
+			$condition = ' WHERE u.status = 2 ';
 			break;
-	}
-	if (user_is_vice_founder()) {
-		$condition .= ' AND u.owner_uid = ' . $_W['uid'];
 	}
 	$pindex = max(1, intval($_GPC['page']));
 	$psize = 20;
@@ -58,19 +50,13 @@ if (in_array($do, array('display', 'recycle_display', 'check_display', 'vice_fou
 			}
 		}
 
-		$user['founder'] = user_is_founder($user['uid']);
+		$user['founder'] = in_array($user['uid'], $founders);
 		$user['uniacid_num'] = pdo_fetchcolumn("SELECT COUNT(*) FROM ".tablename('uni_account_users')." WHERE uid = :uid", array(':uid' => $user['uid']));
 
 		$user['module_num'] =array();
 		$group = pdo_get('users_group', array('id' => $user['groupid']));
-		$user_role = user_is_founder($user['uid']);
-		if ($user_role) {
-			$user['maxaccount'] = '不限';
-		}
 		if (!empty($group)) {
-			if (empty($user_role)) {
-				$user['maxaccount'] = $group['maxaccount'];
-			}
+			$user['maxaccount'] = in_array($user['uid'], $founders) ? '不限' : $group['maxaccount'];
 			$user['groupname'] = $group['name'];
 			$package = iunserializer($group['package']);
 			$group['package'] = uni_groups($package);
@@ -87,7 +73,7 @@ if (in_array($do, array('display', 'recycle_display', 'check_display', 'vice_fou
 		$user['module_nums'] = count($user['module_num']) + $system_module_num;
 	}
 	unset($user);
-	$usergroups = user_group();
+	$usergroups = pdo_getall('users_group', array(), array(), 'id');
 	template('user/display');
 }
 
@@ -116,11 +102,23 @@ if (in_array($do, array('recycle', 'recycle_delete', 'recycle_restore', 'check_p
 			pdo_update('users', $data , array('uid' => $uid));
 			itoast('更新成功！', referer(), 'success');
 			break;
-		case 'recycle':			user_delete($uid, true);
+		case 'recycle':			$data = array('status' => 3);
+			pdo_update('users', $data , array('uid' => $uid));
 			itoast('更新成功！', referer(), 'success');
 			break;
-		case 'recycle_delete':			user_delete($uid);
-			itoast('删除成功！', referer(), 'success');
+		case 'recycle_delete':			if (pdo_delete('users', array('uid' => $uid)) === 1) {
+								$user_set_account = pdo_getall('uni_account_users', array('uid' => $uid, 'role' => 'owner'));
+				if (!empty($user_set_account)) {
+					foreach ($user_set_account as $account) {
+						cache_build_account_modules($account['uniacid']);
+					}
+				}
+				pdo_delete('uni_account_users', array('uid' => $uid));
+				pdo_delete('users_profile', array('uid' => $uid));
+				itoast('删除成功！', referer(), 'success');
+			} else {
+				itoast('删除失败！', referer(), 'error');
+			}
 			break;
 		case 'recycle_restore':
 			$data = array('status' => 2);

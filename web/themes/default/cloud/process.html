@@ -1,7 +1,6 @@
 {template 'common/header'}
 <script type="text/javascript">
 <!--
-	var packet = {php echo ($packet ? json_encode($packet) : 'null');};
 	angular.module('cloudApp', ['app']);
 	angular.module('cloudApp')
 	.controller('FileProcessorCtrl', function($scope, $http, config) {
@@ -54,10 +53,6 @@
 		}
 	})
 	.controller('SchemasProcessorCtrl', function($scope, $http, config){
-		if (packet && (packet.files.length > 0)) {
-			util.message('请先完成文件同步', './index.php?c=cloud&a=upgrade');
-			return false;
-		}
 		$scope.schemas = config.schemas;
 		$scope.fails = [];
 		var is_m_install = config.is_module_install;
@@ -102,43 +97,7 @@
 		}
 		proc();
 	})
-	.controller('CloudDiagnoseCtrl', ['$scope', '$http', 'config', function($scope, $http, config){
-		$scope.showToken = function() {
-			util.message('Token:' + $('#token').val(), '', 'info');
-		};
-
-		$('.js-checkip p').each(function(){
-			var $this = $(this);
-			$.getJSON('./index.php?c=cloud&a=diagnose&do=testapi&ip='+$this.find('#serverdnsip').html(), function(testdata) {
-				$this.find('#checkresult').html(testdata.message.message);
-			});
-		});
-		$.ajax({
-			type : "get",
-			data : {'date' : config.date, 'version' : config.version, 'siteurl' : config.siteurl},
-			url : "https://v2.addons.we7.cc/web/index.php?c=site&a=diagnose&jsonpcallback=?",
-			dataType : "jsonp",
-			success : function(data){
-				if (data['check_time']['errno'] == '0') {
-					$('#check-time').html('<i class="fa fa-check text-success"></i> 正常');
-				} else {
-					$('#check-time').html('<i class="fa fa-remove text-warning"></i> 异常，当前时间为：'+data['check_time']['message']['localtime']+"; 服务器时间为："+data['check_time']['message']['servertime']);
-				}
-				if (data['check_touch']['errno'] == '0') {
-					$('#check-touch').html('<i class="fa fa-check text-success"></i> 正常');
-				} else {
-					$('#check-touch').html('<i class="fa fa-remove text-warning"></i> 异常，'+data['check_touch']['message']);
-				}
-			},
-			error:function(){
-				alert('fail');
-			}
-		});
-	}]).controller('processor', function($scope, $http){
-		if (packet && (packet.files.length > 0 || packet.files.schemas > 0)) {
-			util.message('请先完成文件或是数据库同步', './index.php?c=cloud&a=upgrade');
-			return false;
-		}
+	.controller('processor', function($scope, $http){
 		$scope.scripts = {php echo json_encode($scripts);};
 		$scope.fails = [];
 		
@@ -258,7 +217,7 @@
 			</script>
 			{else}
 			<script>
-				location.href = '{url "module/manage-system/install" array("module_name" => $m, "flag" => 1, "account_type" => $_GPC["account_type"])}';
+				location.href = '{url "system/module/install" array("module_name" => $m, "flag" => 1, "account_type" => $_GPC["account_type"])}';
 			</script>
 			{/if}
 		{/if}
@@ -274,9 +233,9 @@
 		{else}
 		<script>
 			{if $_GPC['batch']}
-				location.href = '{url "cloud/process" array("step" => "scripts", "m" => $m, "is_upgrade" => $is_upgrade, "batch" => 1, "account_type" => $_GPC["account_type"])}';
+				location.href = '{url "cloud/process" array("step" => "scripts", "m" => $m, "is_upgrade" => $is_upgrade, "batch" => 1)}';
 			{else}
-				location.href = '{url "cloud/process" array("step" => "scripts", "m" => $m, "is_upgrade" => $is_upgrade, "account_type" => $_GPC["account_type"])}';
+				location.href = '{url "cloud/process" array("step" => "scripts", "m" => $m, "is_upgrade" => $is_upgrade)}';
 			{/if}
 		</script>
 		{/if}
@@ -323,7 +282,7 @@
 			</script>
 			{else}
 			<script>
-				location.href = '{url "module/manage-system/upgrade" array("module_name" => $m, "flag" => 1, "account_type" => $_GPC["account_type"])}';
+				location.href = '{url "system/module/upgrade" array("module_name" => $m, "flag" => 1)}';
 			</script>
 			{/if}
 			

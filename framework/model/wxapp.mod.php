@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -23,8 +23,6 @@ function wxapp_getpackage($data, $if_single = false) {
 
 function wxapp_account_create($account) {
 	global $_W;
-	load()->model('account');
-	load()->model('user');
 	$uni_account_data = array(
 		'name' => $account['name'],
 		'description' => $account['description'],
@@ -35,6 +33,7 @@ function wxapp_account_create($account) {
 		return error(1, '添加公众号失败');
 	}
 	$uniacid = pdo_insertid();
+	
 	$account_data = array(
 		'uniacid' => $uniacid, 
 		'type' => $account['type'], 
@@ -58,11 +57,8 @@ function wxapp_account_create($account) {
 	);
 	pdo_insert('account_wxapp', $wxapp_data);
 	
-	if (empty($_W['isfounder']) || user_is_vice_founder()) {
-		uni_user_account_role($uniacid, $_W['uid'], ACCOUNT_MANAGE_NAME_OWNER);
-	}
-	if (!empty($_W['user']['owner_uid'])) {
-		uni_user_account_role($uniacid, $_W['user']['owner_uid'], ACCOUNT_MANAGE_NAME_VICE_FOUNDER);
+	if (empty($_W['isfounder'])) {
+		pdo_insert('uni_account_users', array('uniacid' => $uniacid, 'uid' => $_W['uid'], 'role' => 'owner'));
 	}
 	pdo_update('uni_account', array('default_acid' => $acid), array('uniacid' => $uniacid));
 	

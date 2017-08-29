@@ -1,14 +1,13 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
 $we7_system_menu = array();
 $we7_system_menu['account'] = array(
 	'title' => '公众号',
-	'icon' => 'wi wi-white-collar',
 	'url' => url('home/welcome/platform'),
 	'section' => array(
 		'platform_plus' => array(
@@ -20,7 +19,19 @@ $we7_system_menu['account'] = array(
 					'icon' => 'wi wi-reply',
 					'permission_name' => 'platform_reply',
 					'sub_permission' => array(
-																																																																													),
+						array(
+							'title' => '关键字自动回复 ',
+							'permission_name' => 'platform_reply',
+						),
+						array(
+							'title' => '非关键字自动回复 ',
+							'permission_name' => 'platform_reply_special',
+						),
+						array(
+							'title' => '欢迎/默认回复',
+							'permission_name' => 'platform_reply_system',
+						),
+					),
 				),
 				'platform_menu' => array(
 					'title' => '自定义菜单',
@@ -34,7 +45,15 @@ $we7_system_menu['account'] = array(
 					'icon' => 'wi wi-qrcode',
 					'permission_name' => 'platform_qr',
 					'sub_permission' => array(
-																																																					),
+						array(
+							'title' => '二维码',
+							'permission_name' => 'platform_qr',
+						),
+						array(
+							'title' => '转化链接',
+							'permission_name' => 'platform_url2qr',
+						),
+					),
 				),
 				'platform_mass_task' => array(
 					'title' => '定时群发',
@@ -54,7 +73,15 @@ $we7_system_menu['account'] = array(
 					'icon' => 'wi wi-home',
 					'permission_name' => 'platform_site',
 					'sub_permission' => array(
-																																																					),
+						array(
+							'title' => '添加/编辑',
+							'permission_name' => 'platform_site_post',
+						),
+						array(
+							'title' => '删除',
+							'permission_name' => 'platform_site_delete',
+						),
+					),
 				)
 			),
 		),
@@ -86,37 +113,17 @@ $we7_system_menu['account'] = array(
 				'profile' => array(
 					'title' => '参数配置',
 					'url' => url('profile/passport'),
-					'icon' => 'wi wi-parameter-setting',
+					'icon' => 'wi wi-parameter-stting',
 					'permission_name' => 'profile_setting',
-				),
-				'payment' => array(
-					'title' => '支付参数',
-					'url' => url('profile/payment'),
-					'icon' => 'wi wi-pay-setting',
-					'permission_name' => 'profile_setting',
-				),
+				)
 			),
 		),
 	),
 );
 $we7_system_menu['wxapp'] = array(
 	'title' => '小程序',
-	'icon' => 'wi wi-small-routine',
 	'url' => url('wxapp/display/home'),
 	'section' => array(
-		'wxapp_entrance' => array(
-			'title' => '小程序入口',
-			'menu' => array(
-				'module_link' => array(
-					'title' => "入口页面",
-					'url' => url('wxapp/version/module_entrance_link'),
-					'is_display' => 1,
-					'icon' => 'wi wi-data-synchro',
-					'permission_name' => 'wxapp_module_entrance_link',
-				),
-			),
-			'is_display' => true,
-		),
 		'wxapp_module' => array(
 			'title' => '应用',
 			'menu' => array(),
@@ -140,28 +147,19 @@ $we7_system_menu['wxapp'] = array(
 					'permission_name' => 'wxapp_payment',
 				),
 				'front_download' => array(
-					'title' => '小程序下载',
-					'url' => url('wxapp/version/front_download'),
-					'is_display' => 1,
-					'icon' => 'wi wi-wxapp-download',
-					'permission_name' => 'wxapp_front_download',
+						'title' => '小程序下载',
+						'url' => url('wxapp/version/front_download'),
+						'is_display' => 1,
+						'icon' => 'wi wi-wxapp-download',
+						'permission_name' => 'wxapp_front_download',
 				)
 			)
 		)
 	),
 );
 
-$we7_system_menu['module'] = array(
-	'title' => '应用',
-	'icon' => 'wi wi-apply',
-	'url' => url('module/display'),
-	'section' => array(),
-	'is_display' => 0
-);
-
 $we7_system_menu['system'] = array(
 	'title' => '系统管理',
-	'icon' => 'wi wi-setting',
 	'url' => url('home/welcome/system'),
 	'section' => array(
 		'wxplatform' => array(
@@ -201,7 +199,7 @@ $we7_system_menu['system'] = array(
 				),
 				'system_module' => array(
 					'title' => '公众号应用',
-					'url' => url('module/manage-system', array('account_type' => '1')),
+					'url' => url('system/module', array('account_type' => '1')),
 					'icon' => 'wi wi-wx-apply',
 					'permission_name' => 'system_module',
 				),
@@ -227,36 +225,10 @@ $we7_system_menu['system'] = array(
 					'url' => url('account/manage', array('account_type' => '4')),
 					'icon' => 'wi wi-wxapp',
 					'permission_name' => 'system_wxapp',
-					'sub_permission' => array(
-						array(
-							'title' => '小程序管理设置',
-							'permission_name' => 'system_wxapp_manage',
-						),
-						array(
-							'title' => '添加小程序',
-							'permission_name' => 'system_wxapp_post',
-						),
-						array(
-							'title' => '小程序停用',
-							'permission_name' => 'system_wxapp_stop',
-						),
-						array(
-							'title' => '小程序回收站',
-							'permission_name' => 'system_wxapp_recycle',
-						),
-						array(
-							'title' => '小程序删除',
-							'permission_name' => 'system_wxapp_delete',
-						),
-						array(
-							'title' => '小程序恢复',
-							'permission_name' => 'system_wxapp_recover',
-						),
-					),
 				),
 				'system_module_wxapp' => array(
 					'title' => '小程序应用',
-					'url' => url('module/manage-system', array('account_type' => '4')),
+					'url' => url('system/module', array('account_type' => '4')),
 					'icon' => 'wi wi-wxapp-apply',
 					'permission_name' => 'system_module_wxapp',
 				),
@@ -277,30 +249,30 @@ $we7_system_menu['system'] = array(
 					'icon' => 'wi wi-user-group',
 					'permission_name' => 'system_user',
 					'sub_permission' => array(
-						array(
-							'title' => '编辑用户',
-							'permission_name' => 'system_user_post',
-						),
-						array(
-							'title' => '审核用户',
-							'permission_name' => 'system_user_check',
-						),
-						array(
-							'title' => '用户回收站',
-							'permission_name' => 'system_user_recycle',
-						),
-						array(
-							'title' => '用户属性设置',
-							'permission_name' => 'system_user_fields',
-						),
-						array(
-							'title' => '用户属性设置-编辑字段',
-							'permission_name' => 'system_user_fields_post',
-						),
-						array(
-							'title' => '用户注册设置',
-							'permission_name' => 'system_user_registerset',
-						),
+							array(
+								'title' => '编辑用户',
+								'permission_name' => 'system_user_post',
+							),
+							array(
+								'title' => '审核用户',
+								'permission_name' => 'system_user_check',
+							),
+							array(
+								'title' => '用户回收站',
+								'permission_name' => 'system_user_recycle',
+							),
+							array(
+								'title' => '用户属性设置',
+								'permission_name' => 'system_user_fields',
+							),
+							array(
+								'title' => '用户属性设置-编辑字段',
+								'permission_name' => 'system_user_fields_post',
+							),
+							array(
+								'title' => '用户注册设置',
+								'permission_name' => 'system_user_registerset',
+							),
 					),
 				),
 			)
@@ -310,23 +282,9 @@ $we7_system_menu['system'] = array(
 			'menu' => array(
 				'system_module_group' => array(
 					'title' => '应用权限组',
-					'url' => url('module/group'),
+					'url' => url('system/module-group'),
 					'icon' => 'wi wi-appjurisdiction',
 					'permission_name' => 'system_module_group',
-					'sub_permission' => array(
-						array(
-							'title' => '添加应用权限组',
-							'permission_name' => 'system_module_group_add',
-						),
-						array(
-							'title' => '编辑应用权限组',
-							'permission_name' => 'system_module_group_post',
-						),
-						array(
-							'title' => '删除应用权限组',
-							'permission_name' => 'system_module_group_del',
-						),
-					),
 				),
 				'system_user_group' => array(
 					'title' => '用户权限组',
@@ -334,10 +292,6 @@ $we7_system_menu['system'] = array(
 					'icon' => 'wi wi-userjurisdiction',
 					'permission_name' => 'system_user_group',
 					'sub_permission' => array(
-						array(
-							'title' => '添加用户组',
-							'permission_name' => 'system_user_group_add',
-						),
 						array(
 							'title' => '编辑用户组',
 							'permission_name' => 'system_user_group_post',
@@ -350,7 +304,7 @@ $we7_system_menu['system'] = array(
 				),
 			)
 		),
-		'article' => array(
+		'acticle' => array(
 			'title' => '文章/公告',
 			'menu' => array(
 				'system_article' => array(
@@ -383,7 +337,6 @@ $we7_system_menu['system'] = array(
 
 $we7_system_menu['site'] = array(
 	'title' => '站点管理',
-	'icon' => 'wi wi-system-site',
 	'url' => url('cloud/upgrade'),
 	'section' => array(
 		'cloud' => array(
@@ -489,36 +442,34 @@ $we7_system_menu['site'] = array(
 	'founder' => true,
 );
 
-$we7_system_menu['advertisement'] = array (
+/* $we7_system_menu['adviertisement'] = array (
 	'title' => '广告联盟',
-	'icon' => 'wi wi-advert',
-	'url' => url('advertisement/content-provider'),
+	'url' => url('adviertisement/content-provider'),
 	'section' => array(
-		'advertisement' => array(
+		'adviertisement' => array(
 			'title' => '常用系统工具',
 			'menu' => array(
-				'advertisement-content-provider' => array(
+				'adviertisement-content-provider' => array(
 					'title' => '流量主',
-					'url' => url('advertisement/content-provider/account_list'),
+					'url' => url('adviertisement/content-provider/account_list'),
 					'icon' => 'wi wi-flow',
-					'permission_name' => 'advertisement_content-use',
+					'permission_name' => 'adviertisement_content-use',
 				),
-				'advertisement-content-create' => array(
+				'adviertisement-content-create' => array(
 					'title' => '广告主',
-					'url' => url('advertisement/content-provider/content_provider'),
+					'url' => url('adviertisement/content-provider/content_provider'),
 					'icon' => 'wi wi-adgroup',
-					'permission_name' => 'advertisement_content-create',
+					'permission_name' => 'adviertisement_content-create',
 				),
 			)
 		),
 	),
 	'founder' => true,
-);
+); */
 
 $we7_system_menu['appmarket'] = array(
 	'title' => '应用市场',
-	'icon' => 'wi wi-market',
-	'url' => 'http://s.we7.cc',
+	'url' => 'http://we7.cc',
 	'section' => array(),
 	'blank' => true,
 	'founder' => true,

@@ -1,7 +1,7 @@
 <?php
 /**
  * [WeEngine System] Copyright (c) 2014 WE7.CC
- * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.cc/ for more details.
+ * WeEngine is NOT a free software, it under the license terms, visited http://www.we7.win/for more details.
  */
 defined('IN_IA') or exit('Access Denied');
 
@@ -91,6 +91,9 @@ if ($do == 'forward') {
 	);
 	pdo_insert('uni_settings', $unisetting_insert);
 	pdo_insert('mc_groups', array('uniacid' => $uniacid, 'title' => '默认会员组', 'isdefault' => 1));
+
+	load()->model('module');
+	module_build_privileges();
 
 	$account_index_insert = array(
 		'uniacid' => $uniacid,
